@@ -19,17 +19,18 @@
   function seed(){
     if(read(K.appt,null)!==null)return;
     var t=new Date().toISOString();
+    function ct(n){return new Date(d(n)+"T09:15:00").toISOString();}
     write(K.appt,[
-      appt({ref:"SCD-M4KD2A",name:"Priya Nair",phone:"+91 98200 11223",service:"Root Canal Treatment",doctor:"Dr. Ananya Sharma",date:d(0),slot:"11:00 AM",note:"Sensitive to cold since last week.",status:"new",created:t}),
-      appt({ref:"SCD-Q8WB7T",name:"Arjun Mehta",phone:"+91 98330 44190",service:"Dental Implant Consultation",doctor:"Dr. Rohan Mehta",date:d(0),slot:"5:30 PM",note:"Second opinion on implant plan.",source:"call",status:"confirmed",created:t}),
-      appt({ref:"SCD-T2NP9C",name:"Farah Shaikh",phone:"+91 99201 77845",service:"Kids Dentistry",doctor:"Dr. Ananya Sharma",date:d(-1),slot:"12:00 PM",note:"First visit for daughter, age 6.",status:"done",created:t}),
-      appt({ref:"SCD-B7RX4M",name:"Rohit Verma",phone:"+91 98110 20394",service:"Cleaning & Polishing",doctor:"Any dentist",date:d(-1),slot:"10:00 AM",note:"",status:"done",created:t}),
-      appt({ref:"SCD-C9LT2H",name:"Sneha Kulkarni",phone:"+91 99870 55123",service:"Braces / Clear Aligners",doctor:"Dr. Rohan Mehta",date:d(-2),slot:"2:00 PM",note:"Wants aligner simulation.",status:"cancelled",created:t}),
-      appt({ref:"SCD-D3PW8K",name:"Imran Qureshi",phone:"+91 98209 33012",service:"Tooth pain / emergency",doctor:"Dr. Ananya Sharma",date:d(-2),slot:"7:30 PM",note:"Broken molar filling.",source:"call",status:"done",created:t}),
-      appt({ref:"SCD-E6NJ5F",name:"Meera Iyer",phone:"+91 99670 81245",service:"Teeth Whitening",doctor:"Dr. Rohan Mehta",date:d(-3),slot:"5:30 PM",note:"",status:"done",created:t}),
-      appt({ref:"SCD-F2KT7B",name:"Vikas Chauhan",phone:"+91 98197 66034",service:"Wisdom Tooth Extraction",doctor:"Dr. Ananya Sharma",date:d(-4),slot:"10:00 AM",note:"",status:"done",created:t}),
-      appt({ref:"SCD-G8VD3R",name:"Tanvi Desai",phone:"+91 98331 90876",service:"Crowns & Bridges",doctor:"Dr. Rohan Mehta",date:d(-5),slot:"2:00 PM",note:"Three units, zirconia.",status:"done",created:t}),
-      appt({ref:"SCD-H5QM9S",name:"Sameer Khan",phone:"+91 99205 44718",service:"Gum Treatment",doctor:"Dr. Ananya Sharma",date:d(1),slot:"12:00 PM",note:"Bleeding gums for a month.",status:"new",created:t})
+      appt({ref:"SCD-M4KD2A",name:"Priya Nair",phone:"+91 98200 11223",service:"Root Canal Treatment",doctor:"Dr. Ananya Sharma",date:d(0),slot:"11:00 AM",note:"Sensitive to cold since last week.",status:"new",created:ct(0)}),
+      appt({ref:"SCD-Q8WB7T",name:"Arjun Mehta",phone:"+91 98330 44190",service:"Dental Implant Consultation",doctor:"Dr. Rohan Mehta",date:d(0),slot:"5:30 PM",note:"Second opinion on implant plan.",source:"call",status:"confirmed",created:ct(0)}),
+      appt({ref:"SCD-T2NP9C",name:"Farah Shaikh",phone:"+91 99201 77845",service:"Kids Dentistry",doctor:"Dr. Ananya Sharma",date:d(-1),slot:"12:00 PM",note:"First visit for daughter, age 6.",status:"done",created:ct(-1)}),
+      appt({ref:"SCD-B7RX4M",name:"Rohit Verma",phone:"+91 98110 20394",service:"Cleaning & Polishing",doctor:"Any dentist",date:d(-1),slot:"10:00 AM",note:"",status:"done",created:ct(-1)}),
+      appt({ref:"SCD-C9LT2H",name:"Sneha Kulkarni",phone:"+91 99870 55123",service:"Braces / Clear Aligners",doctor:"Dr. Rohan Mehta",date:d(-2),slot:"2:00 PM",note:"Wants aligner simulation.",status:"cancelled",created:ct(-2)}),
+      appt({ref:"SCD-D3PW8K",name:"Imran Qureshi",phone:"+91 98209 33012",service:"Tooth pain / emergency",doctor:"Dr. Ananya Sharma",date:d(-2),slot:"7:30 PM",note:"Broken molar filling.",source:"call",status:"done",created:ct(-2)}),
+      appt({ref:"SCD-E6NJ5F",name:"Meera Iyer",phone:"+91 99670 81245",service:"Teeth Whitening",doctor:"Dr. Rohan Mehta",date:d(-3),slot:"5:30 PM",note:"",status:"done",created:ct(-3)}),
+      appt({ref:"SCD-F2KT7B",name:"Vikas Chauhan",phone:"+91 98197 66034",service:"Wisdom Tooth Extraction",doctor:"Dr. Ananya Sharma",date:d(-4),slot:"10:00 AM",note:"",status:"done",created:ct(-4)}),
+      appt({ref:"SCD-G8VD3R",name:"Tanvi Desai",phone:"+91 98331 90876",service:"Crowns & Bridges",doctor:"Dr. Rohan Mehta",date:d(-5),slot:"2:00 PM",note:"Three units, zirconia.",status:"done",created:ct(-5)}),
+      appt({ref:"SCD-H5QM9S",name:"Sameer Khan",phone:"+91 99205 44718",service:"Gum Treatment",doctor:"Dr. Ananya Sharma",date:d(1),slot:"12:00 PM",note:"Bleeding gums for a month.",status:"new",created:ct(1)})
     ]);
     write(K.pat,[
       {name:"Priya Nair",phone:"+91 98200 11223",firstVisit:d(0),visits:1,note:"Cold sensitivity"},
