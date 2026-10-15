@@ -6,7 +6,7 @@
   document.getElementById("st-pend").textContent=a.filter(function(x){return x.status==="new";}).length;
   document.getElementById("st-week").textContent=a.filter(function(x){return x.created.slice(0,10)>=wk;}).length;
   document.getElementById("st-pat").textContent=SCD.patients().length;
-  function fmt(s){if(!s||s==="Any open slot")return "—";var m=s.match(/^(\d{1,2}):(\d{2})/);if(!m)return s;var h=+m[1],mm=m[2],ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+mm+" "+ap;}
+  function fmt(s){if(!s||s==="Any open slot")return "—";if(/am|pm/i.test(s))return s;var m=s.match(/^(\d{1,2}):(\d{2})/);if(!m)return s;var h=+m[1],mm=m[2],ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+mm+" "+ap;}
   var rows=a.filter(function(x){return x.date===today&&x.status!=="cancelled";})
     .sort(function(x,y){return (x.slot||"").localeCompare(y.slot||"");});
   document.getElementById("today-rows").innerHTML=rows.length?rows.map(function(x){
