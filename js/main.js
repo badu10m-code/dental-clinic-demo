@@ -46,3 +46,32 @@
   }
   var y=document.getElementById("yr");if(y)y.textContent=new Date().getFullYear();
 })();
+
+/* typewriter */
+(function(){
+  var el=document.getElementById("typer");if(!el)return;
+  var words=["listening.","comfort.","honesty.","care."],wi=0,ci=0,del=false;
+  function tick(){
+    var w=words[wi];
+    el.textContent=w.slice(0,ci);
+    var wait=del?45:110;
+    if(!del&&ci===w.length){wait=1700;del=true;}
+    else if(del&&ci===0){del=false;wi=(wi+1)%words.length;wait=350;}
+    else ci+=del?-1:1;
+    setTimeout(tick,wait);
+  }
+  tick();
+})();
+/* scroll progress */
+(function(){
+  var b=document.createElement("div");b.className="progress";document.body.appendChild(b);
+  addEventListener("scroll",function(){
+    var d=document.documentElement,max=d.scrollHeight-d.clientHeight;
+    b.style.width=(max>0?(d.scrollTop/max*100):0)+"%";
+  },{passive:true});
+})();
+/* clip-path image reveal */
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.25});
+  document.querySelectorAll(".reveal-img").forEach(function(el){io.observe(el);});
+})();
