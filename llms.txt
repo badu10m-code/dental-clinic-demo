@@ -1,0 +1,31 @@
+# SmileCraft Dental Studio
+
+> Specialist dental clinic in Andheri West, Mumbai. MDS endodontist and implantologist, transparent ₹ pricing, WhatsApp booking, same-week appointments.
+
+This is a demonstration website built for a client pitch. Clinic name, doctors and reviews are sample data.
+
+## Clinic facts (demo)
+- Address: 302, Pearl Heights, Veera Desai Road, Andheri West, Mumbai 400053
+- Hours: Mon to Sat 10:00 AM to 8:00 PM; Sunday by appointment
+- Phone: +91 98765 43210 · WhatsApp: +91 98765 43210
+- Rating: 4.9 across 312 Google reviews (sample data)
+- Doctors: Dr. Ananya Sharma (MDS, Endodontics), Dr. Rohan Mehta (MDS, Prosthodontics & Implantology)
+
+## Services and typical prices (₹, demo)
+- Checkup & consultation: 500 (adjusted against treatment)
+- Scaling & cleaning: 1,500 to 4,000
+- Root canal (per tooth): 4,000 to 9,000
+- Crowns & bridges (per unit, zirconia): 6,000 to 14,000
+- Dental implant with crown: 28,000 to 45,000
+- Braces / aligners (full case): 35,000 to 1,20,000
+- Teeth whitening: 8,000 to 15,000
+- Kids' dentistry: from 800
+- Wisdom tooth extraction: 3,500 to 12,000
+
+## Key pages
+- [Home](https://badu10m-code.github.io/dental-clinic-demo/): overview, services teaser, doctors, testimonials
+- [Services and prices](https://badu10m-code.github.io/dental-clinic-demo/services.html)
+- [Doctors](https://badu10m-code.github.io/dental-clinic-demo/doctors.html)
+- [Booking & FAQ](https://badu10m-code.github.io/dental-clinic-demo/contact.html)
+- [Blog](https://badu10m-code.github.io/dental-clinic-demo/blog.html): patient articles on root canals, implants, aligners, kids, whitening, scaling
+- [Privacy](https://badu10m-code.github.io/dental-clinic-demo/privacy.html) · [Security](https://badu10m-code.github.io/dental-clinic-demo/security.html)

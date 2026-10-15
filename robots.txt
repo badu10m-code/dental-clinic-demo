@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+# Explicitly welcome AI search crawlers (GEO)
+User-agent: GPTBot
+Allow: /
+Disallow: /admin/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin/
+
+User-agent: CCBot
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://badu10m-code.github.io/dental-clinic-demo/sitemap.xml

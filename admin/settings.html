@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en-IN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'; connect-src 'self'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow">
+<title>Settings — SmileCraft Admin</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560&family=Inter:wght@400;550;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+</head><body>
+<div class="demo-banner">🧪 Demo panel &mdash; no password, by design. <small>This is a demonstration. On the live clinic build this area sits behind secure authentication, and bookings arrive from the public site instead of sample data. Everything you see here is stored only in this browser.</small></div>
+<div class="layout">
+<aside class="side">
+  <div class="brand">🦷 SmileCraft<em>Admin panel</em></div>
+  <a href="index.html">Dashboard</a>
+  <a href="appointments.html">Appointments</a>
+  <a href="patients.html">Patients</a>
+  <a href="posts.html">Clinic updates</a>
+  <a href="settings.html">Settings</a>
+  <a href="../index.html">View website ↗</a>
+  <div class="foot">Demo build. No password is needed because nothing here is real patient data, and nothing leaves this browser.</div>
+</aside>
+<main class="main"><h1>Clinic settings</h1><p class="sub">Saved values appear across the whole website on the next page load: footer, contact page, WhatsApp drafts.</p>
+<div class="panel"><form class="admin-form" id="cfgform">
+<div><label for="c-name">Clinic name</label><input id="c-name"></div>
+<div><label for="c-phone">Phone (shown on site)</label><input id="c-phone"></div>
+<div><label for="c-whatsapp">WhatsApp number (digits only, with country code)</label><input id="c-whatsapp" inputmode="numeric"></div>
+<div><label for="c-address">Address</label><textarea id="c-address" rows="2"></textarea></div>
+<div><label for="c-hours">Timings</label><input id="c-hours"></div>
+<button class="btn" type="submit">Save settings</button></form></div>
+<div class="panel"><h2>What is real and what is demo</h2>
+<p>This panel runs entirely in your browser for the demo: bookings, patients and posts are stored locally, so you can click through everything without any risk. On the live clinic build, these same screens connect to an encrypted database, the panel sits behind a secure login, and bookings from the public website arrive here in real time.</p></div></main>
+</div>
+<script src="../js/store.js"></script><script src="../js/admin-core.js"></script><script src="../js/admin-settings.js"></script>
+</body></html>
