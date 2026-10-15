@@ -10,14 +10,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560&family=Inter:wght@400;550;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/admin.css">
 </head><body>
-<div class="demo-banner">🧪 Demo panel &mdash; no password, by design. <small>This is a demonstration. On the live clinic build this area sits behind secure authentication, and bookings arrive from the public site instead of sample data. Everything you see here is stored only in this browser.</small></div>
+<div class="demo-banner">🧪 Demo panel &mdash; no password, by design. <small>This is a demonstration. On the live clinic build this area sits behind secure authentication. Everything you see here is stored only in this browser.</small></div>
 <div class="layout">
 <aside class="side">
   <div class="brand">🦷 SmileCraft<em>Admin panel</em></div>
   <a href="index.html">Dashboard</a>
   <a href="appointments.html">Appointments</a>
   <a href="patients.html">Patients</a>
-  <a href="posts.html">Clinic updates</a>
+  <a href="posts.html">Blog &amp; updates</a>
+  <a href="banners.html">Banners</a>
+  <a href="stats.html">Booking stats</a>
   <a href="settings.html">Settings</a>
   <a href="../index.html">View website ↗</a>
   <div class="foot">Demo build. No password is needed because nothing here is real patient data, and nothing leaves this browser.</div>
@@ -31,7 +33,7 @@
 <div><label for="c-hours">Timings</label><input id="c-hours"></div>
 <button class="btn" type="submit">Save settings</button></form></div>
 <div class="panel"><h2>What is real and what is demo</h2>
-<p>This panel runs entirely in your browser for the demo: bookings, patients and posts are stored locally, so you can click through everything without any risk. On the live clinic build, these same screens connect to an encrypted database, the panel sits behind a secure login, and bookings from the public website arrive here in real time.</p></div></main>
+<p>This panel runs entirely in your browser for the demo: bookings, patients, banners and posts are stored locally, so you can click through everything without any risk. On the live clinic build, these same screens connect to an encrypted database, the panel sits behind a secure login, and bookings from the public website arrive here in real time.</p></div></main>
 </div>
 <script src="../js/store.js"></script><script src="../js/admin-core.js"></script><script src="../js/admin-settings.js"></script>
 </body></html>

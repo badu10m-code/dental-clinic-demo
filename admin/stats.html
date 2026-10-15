@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en-IN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'; connect-src 'self'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex,nofollow">
+<title>Booking stats — SmileCraft Admin</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560&family=Inter:wght@400;550;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/admin.css">
+</head><body>
+<div class="demo-banner">🧪 Demo panel &mdash; no password, by design. <small>This is a demonstration. On the live clinic build this area sits behind secure authentication. Everything you see here is stored only in this browser.</small></div>
+<div class="layout">
+<aside class="side">
+  <div class="brand">🦷 SmileCraft<em>Admin panel</em></div>
+  <a href="index.html">Dashboard</a>
+  <a href="appointments.html">Appointments</a>
+  <a href="patients.html">Patients</a>
+  <a href="posts.html">Blog &amp; updates</a>
+  <a href="banners.html">Banners</a>
+  <a href="stats.html">Booking stats</a>
+  <a href="settings.html">Settings</a>
+  <a href="../index.html">View website ↗</a>
+  <div class="foot">Demo build. No password is needed because nothing here is real patient data, and nothing leaves this browser.</div>
+</aside>
+<main class="main"><h1>Booking stats</h1><p class="sub">Where the last seven days went. Bars count bookings made each day.</p>
+<div class="cards">
+<div class="stat"><b id="x-total">0</b><span>Bookings, 7 days</span></div>
+<div class="stat"><b id="x-online">0</b><span>From website</span></div>
+<div class="stat"><b id="x-call">0</b><span>By call / walk-in</span></div>
+<div class="stat"><b id="x-new">0</b><span>Patients, new this week</span></div>
+</div>
+<div class="panel"><h2>Bookings per day (last 7 days)</h2><div class="chart" id="chart"></div></div>
+<div class="panel"><h2>Status split</h2><div id="status-split"></div></div>
+<div class="panel"><h2>Most requested services</h2><table><thead><tr><th>Service</th><th>Bookings</th></tr></thead><tbody id="svc-rows"></tbody></table></div></main>
+</div>
+<script src="../js/store.js"></script><script src="../js/admin-core.js"></script><script src="../js/admin-stats.js"></script>
+</body></html>

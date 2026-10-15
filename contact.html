@@ -55,7 +55,11 @@
       <div class="field"><label>Preferred time</label><div class="chips">
         <span class="chip" role="button">10:00 AM</span><span class="chip" role="button">12:00 PM</span><span class="chip" role="button">2:00 PM</span><span class="chip" role="button">5:30 PM</span><span class="chip" role="button">7:30 PM</span><span class="chip" role="button">Any open slot</span>
       </div></div>
-      <div class="field"><label for="bk-note">Anything we should know? (optional)</label><textarea id="bk-note" rows="3" maxlength="400" placeholder="Pain since yesterday, preferred doctor, insurance paperwork..."></textarea></div>
+      <div class="form-grid">
+        <div class="field"><label for="bk-doc">Preferred dentist</label>
+          <select id="bk-doc"><option>Any dentist</option><option>Dr. Ananya Sharma</option><option>Dr. Rohan Mehta</option></select></div>
+        <div class="field"><label for="bk-note">Anything we should know? (optional)</label><textarea id="bk-note" rows="1" maxlength="400" placeholder="Pain since yesterday, insurance paperwork..."></textarea></div>
+      </div>
       <p class="form-note">We use your number only to confirm this appointment. No marketing messages, ever.</p>
       <button class="btn btn-solid" type="submit" style="justify-content:center">Request appointment <span class="arr">→</span></button>
     </form>

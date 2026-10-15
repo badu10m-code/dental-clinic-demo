@@ -10,30 +10,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560&family=Inter:wght@400;550;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/admin.css">
 </head><body>
-<div class="demo-banner">🧪 Demo panel &mdash; no password, by design. <small>This is a demonstration. On the live clinic build this area sits behind secure authentication, and bookings arrive from the public site instead of sample data. Everything you see here is stored only in this browser.</small></div>
+<div class="demo-banner">🧪 Demo panel &mdash; no password, by design. <small>This is a demonstration. On the live clinic build this area sits behind secure authentication. Everything you see here is stored only in this browser.</small></div>
 <div class="layout">
 <aside class="side">
   <div class="brand">🦷 SmileCraft<em>Admin panel</em></div>
   <a href="index.html">Dashboard</a>
   <a href="appointments.html">Appointments</a>
   <a href="patients.html">Patients</a>
-  <a href="posts.html">Clinic updates</a>
+  <a href="posts.html">Blog &amp; updates</a>
+  <a href="banners.html">Banners</a>
+  <a href="stats.html">Booking stats</a>
   <a href="settings.html">Settings</a>
   <a href="../index.html">View website ↗</a>
   <div class="foot">Demo build. No password is needed because nothing here is real patient data, and nothing leaves this browser.</div>
 </aside>
-<main class="main"><h1>Good to see you.</h1><p class="sub">Everything the front desk needs, one screen at a time.</p>
+<main class="main"><h1>Good to see you.</h1><p class="sub">Today at a glance, then everything one click away.</p>
 <div class="cards">
-<div class="stat"><b id="st-up">0</b><span>Upcoming appointments</span></div>
+<div class="stat"><b id="st-today">0</b><span>Today's appointments</span></div>
 <div class="stat"><b id="st-pend">0</b><span>Awaiting confirmation</span></div>
-<div class="stat"><b id="st-done">0</b><span>Completed</span></div>
+<div class="stat"><b id="st-week">0</b><span>Bookings this week</span></div>
 <div class="stat"><b id="st-pat">0</b><span>Patients on file</span></div>
 </div>
-<div class="panel"><h2>Recent bookings</h2><table><thead><tr><th>Patient</th><th>Service</th><th>When</th><th>Status</th></tr></thead><tbody id="recent"></tbody></table></div>
+<div class="panel"><h2>Today's schedule</h2><table><thead><tr><th>Time</th><th>Patient</th><th>Service</th><th>Doctor</th><th>Status</th><th>Quick</th></tr></thead><tbody id="today-rows"></tbody></table></div>
 <div class="panel"><h2>Quick actions</h2><div class="qa">
-<a href="appointments.html">Confirm today's appointments and send WhatsApp drafts <span>→</span></a>
-<a href="posts.html">Publish a clinic update to the blog <span>→</span></a>
-<a href="settings.html">Update timings, phone or address site-wide <span>→</span></a>
+<a href="appointments.html">Confirm appointments and send WhatsApp drafts <span>→</span></a>
+<a href="banners.html">Put a new offer banner on the homepage <span>→</span></a>
+<a href="posts.html">Write a blog post or clinic update <span>→</span></a>
+<a href="stats.html">See the last 7 days of bookings <span>→</span></a>
 </div></div></main>
 </div>
 <script src="../js/store.js"></script><script src="../js/admin-core.js"></script><script src="../js/admin-dash.js"></script>

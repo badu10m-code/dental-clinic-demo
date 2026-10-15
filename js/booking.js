@@ -6,14 +6,14 @@
     slotChips.forEach(function(x){x.classList.remove("on");});ch.classList.add("on");slot=ch.textContent.trim();});});
   f.addEventListener("submit",function(ev){
     ev.preventDefault();
-    var name=f.querySelector("#bk-name"),phone=f.querySelector("#bk-phone"),svc=f.querySelector("#bk-svc"),date=f.querySelector("#bk-date"),note=f.querySelector("#bk-note");
+    var name=f.querySelector("#bk-name"),phone=f.querySelector("#bk-phone"),svc=f.querySelector("#bk-svc"),date=f.querySelector("#bk-date"),note=f.querySelector("#bk-note"),doc=f.querySelector("#bk-doc");
     var n=name.value.trim(),p=phone.value.trim();
     var digits=p.replace(/\D/g,"");
     if(n.length<2||digits.length<10||!svc.value||!date.value){f.querySelector(".form-note").textContent="Please fill your name, a 10-digit phone number, service and date.";return;}
     var all=SCD.appts();
     var dupe=all.some(function(a){return a.phone.replace(/\D/g,"")===digits&&a.date===date.value&&a.status!=="cancelled";});
     if(dupe){f.querySelector(".form-note").textContent="An appointment with this number is already booked for that date. Call us if you need a change.";return;}
-    var appt={ref:SCD.ref(),name:n,phone:p,service:svc.value,date:date.value,slot:slot||"Any open slot",note:note.value.trim(),status:"new",created:new Date().toISOString()};
+    var appt={ref:SCD.ref(),name:n,phone:p,service:svc.value,doctor:doc?doc.value:"Any dentist",date:date.value,slot:slot||"Any open slot",note:note.value.trim(),source:"online",status:"new",created:new Date().toISOString()};
     SCD.saveAppts(all.concat([appt]));
     /* patients ledger */
     var pats=SCD.patients();
@@ -22,7 +22,7 @@
     f.style.display="none";
     var box=document.getElementById("book-confirm");
     box.querySelector(".ref").textContent=appt.ref;
-    box.querySelector(".sum").textContent=svc.value+" · "+new Date(date.value+"T00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})+" · "+appt.slot;
+    box.querySelector(".sum").textContent=svc.value+" · "+new Date(date.value+"T00:00").toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})+" · "+appt.slot+" · "+appt.doctor;
     box.classList.add("show");
     box.scrollIntoView({behavior:"smooth",block:"center"});
   });

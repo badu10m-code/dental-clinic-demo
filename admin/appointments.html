@@ -10,22 +10,44 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,560&family=Inter:wght@400;550;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/admin.css">
 </head><body>
-<div class="demo-banner">🧪 Demo panel &mdash; no password, by design. <small>This is a demonstration. On the live clinic build this area sits behind secure authentication, and bookings arrive from the public site instead of sample data. Everything you see here is stored only in this browser.</small></div>
+<div class="demo-banner">🧪 Demo panel &mdash; no password, by design. <small>This is a demonstration. On the live clinic build this area sits behind secure authentication. Everything you see here is stored only in this browser.</small></div>
 <div class="layout">
 <aside class="side">
   <div class="brand">🦷 SmileCraft<em>Admin panel</em></div>
   <a href="index.html">Dashboard</a>
   <a href="appointments.html">Appointments</a>
   <a href="patients.html">Patients</a>
-  <a href="posts.html">Clinic updates</a>
+  <a href="posts.html">Blog &amp; updates</a>
+  <a href="banners.html">Banners</a>
+  <a href="stats.html">Booking stats</a>
   <a href="settings.html">Settings</a>
   <a href="../index.html">View website ↗</a>
   <div class="foot">Demo build. No password is needed because nothing here is real patient data, and nothing leaves this browser.</div>
 </aside>
-<main class="main"><h1>Appointments</h1><p class="sub">New online bookings land here. Confirm, set the WhatsApp draft, and track status until done.</p>
-<div class="toolbar"><input id="q" type="search" placeholder="Search name, phone, ref, service..."><select id="f"><option value="all">All statuses</option><option value="new">New</option><option value="confirmed">Confirmed</option><option value="done">Done</option><option value="cancelled">Cancelled</option></select><button class="btn btn-ghost" id="csv" type="button">Export CSV</button></div>
-<div class="panel"><table><thead><tr><th>Patient</th><th>Service</th><th>Date &amp; slot</th><th>Ref</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rows"></tbody></table></div>
-<p class="sub">The WhatsApp draft opens with the confirmation message already written: name, date, slot, reference and the clinic address. Edit if you like, then hit send. The patient never sees the dashboard.</p></main>
+<main class="main"><h1>Appointments</h1><p class="sub">Filter by date and doctor, set exact times, confirm on WhatsApp, or call straight from here. Call and walk-in bookings go in through "Add appointment".</p>
+<div class="toolbar">
+<input id="q" type="search" placeholder="Search name, phone, ref, service...">
+<select id="f"><option value="all">All statuses</option><option value="new">New</option><option value="confirmed">Confirmed</option><option value="done">Done</option><option value="cancelled">Cancelled</option></select>
+<select id="doc"><option value="all">All doctors</option><option>Dr. Ananya Sharma</option><option>Dr. Rohan Mehta</option><option>Any dentist</option></select>
+<select id="dmode"><option value="today">Today</option><option value="all">All dates</option><option value="pick">Pick a date…</option></select>
+<input id="dpick" type="date" style="display:none">
+<button class="btn btn-ghost" id="csv" type="button">Export CSV</button>
+<button class="btn" id="toggle-add" type="button">+ Add appointment (call / walk-in)</button>
+</div>
+<div class="panel" id="addpanel" style="display:none"><h2>Add an appointment taken by phone or at the desk</h2>
+<form class="admin-form" id="addform">
+<div class="form-grid" style="grid-template-columns:1fr 1fr;gap:16px">
+<div><label for="a-name">Patient name</label><input id="a-name" required maxlength="60"></div>
+<div><label for="a-phone">Phone</label><input id="a-phone" type="tel" required maxlength="16" placeholder="+91"></div>
+<div><label for="a-svc">Service</label><select id="a-svc"><option>Checkup &amp; consultation</option><option>Cleaning &amp; Polishing</option><option>Root Canal Treatment</option><option>Dental Implant Consultation</option><option>Braces / Clear Aligners</option><option>Teeth Whitening</option><option>Crowns &amp; Bridges</option><option>Kids Dentistry</option><option>Gum Treatment</option><option>Wisdom Tooth Extraction</option><option>Tooth pain / emergency</option></select></div>
+<div><label for="a-doc">Doctor</label><select id="a-doc"><option>Any dentist</option><option>Dr. Ananya Sharma</option><option>Dr. Rohan Mehta</option></select></div>
+<div><label for="a-date">Date</label><input id="a-date" type="date" required></div>
+<div><label for="a-slot">Time</label><input id="a-slot" type="time"></div>
+</div>
+<div><label for="a-note">Note (optional)</label><input id="a-note" maxlength="160"></div>
+<button class="btn" type="submit">Save appointment</button></form></div>
+<div class="panel"><table><thead><tr><th>Patient</th><th>Service</th><th>Doctor</th><th>Date &amp; slot</th><th>Ref</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p class="sub">"Set time" fixes the exact slot (choose a chip or type a time), then the WhatsApp draft carries it. The draft opens pre-written: patient name, doctor, date, time, reference and clinic address. Edit if you like, then hit send.</p></main>
 </div>
 <script src="../js/store.js"></script><script src="../js/admin-core.js"></script><script src="../js/admin-appts.js"></script>
 </body></html>
