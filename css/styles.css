@@ -252,3 +252,18 @@ footer .fine{border-top:1px solid rgba(255,255,255,.14);margin-top:52px;padding-
 
 /* image slots carry a soft tint while loading (slow networks) */
 .feat img,.duo img,.gallery img,.col img,.article .cover{background:linear-gradient(135deg,#e8e2d4,#dcd6c6)}
+
+/* heading + offset vertical image (work we do most) */
+.head-img-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:56px;align-items:end}
+.head-img-grid img{width:100%;max-height:430px;object-fit:cover;border-radius:var(--r);box-shadow:var(--shadow)}
+/* next-slots ticker (animated) */
+.slot-ticker{display:flex;align-items:center;gap:12px;margin-top:26px;padding:14px 18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:.92rem;color:var(--muted)}
+.slot-ticker .dot{width:9px;height:9px;border-radius:50%;background:#2f9e6e;flex:none;animation:tt-pulse 1.6s ease-in-out infinite}
+@keyframes tt-pulse{0%,100%{box-shadow:0 0 0 0 rgba(47,158,110,.45)}50%{box-shadow:0 0 0 7px rgba(47,158,110,0)}}
+.slot-ticker .tt-label{color:var(--ink);font-weight:600}
+.slot-ticker .tt-slots{display:flex;gap:10px;margin-left:auto}
+.slot-ticker .tt-slots i{font-style:normal;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ink);animation:tt-glow 4.5s ease-in-out infinite}
+.slot-ticker .tt-slots i:nth-child(2){animation-delay:1.5s}
+.slot-ticker .tt-slots i:nth-child(3){animation-delay:3s}
+@keyframes tt-glow{0%,88%,100%{background:transparent;border-color:var(--line)}8%,22%{background:#eef5ef;border-color:#2f9e6e}}
+@media (max-width:900px){.head-img-grid{grid-template-columns:1fr;gap:28px}.head-img-grid img{max-height:320px}.slot-ticker{flex-wrap:wrap}.slot-ticker .tt-slots{margin-left:0}}
