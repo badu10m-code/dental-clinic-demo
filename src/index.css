@@ -154,3 +154,16 @@ body {
   border-color: var(--teal);
   color: var(--teal);
 }
+
+@keyframes slideProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-slideProgress {
+  animation: slideProgress linear forwards;
+}

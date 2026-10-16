@@ -25,22 +25,55 @@ import { AdminBanners } from './pages/admin/AdminBanners';
 import { AdminStats } from './pages/admin/AdminStats';
 import { AdminSettings } from './pages/admin/AdminSettings';
 
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+
+const ROUTE_ALIASES: Record<string, string> = {
+  doctor: 'doctors',
+  specialists: 'doctors',
+  dentists: 'doctors',
+  service: 'services',
+  treatments: 'services',
+  treatment: 'services',
+  book: 'contact',
+  booking: 'contact',
+  appointment: 'contact',
+  appointments: 'contact',
+  reviews: 'home',
+  terms: 'privacy',
+};
+
+const KNOWN_PUBLIC_PAGES = new Set([
+  'home',
+  'about',
+  'services',
+  'doctors',
+  'gallery',
+  'blog',
+  'article',
+  'contact',
+  'privacy',
+  'security',
+]);
+
 const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<string>('home');
   const [adminTab, setAdminTab] = useState<string>('dashboard');
   const [pageParams, setPageParams] = useState<Record<string, string>>({});
 
   const { appointments } = useClinicStore();
-  const pendingCount = appointments.filter((a) => a.status === 'new').length;
+  const pendingCount = appointments ? appointments.filter((a) => a.status === 'new').length : 0;
 
   const handleNavigate = (page: string, params?: Record<string, string>) => {
-    setCurrentPage(page);
-    if (params) {
-      setPageParams(params);
-    } else {
+    try {
+      const cleanPage = (page || 'home').trim().toLowerCase();
+      const resolvedPage = ROUTE_ALIASES[cleanPage] || cleanPage;
+      setCurrentPage(resolvedPage);
+      setPageParams(params || {});
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      setCurrentPage('home');
       setPageParams({});
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -67,43 +100,65 @@ const AppContent: React.FC = () => {
 
   if (currentPage === 'admin') {
     return (
-      <AdminLayout
-        currentTab={adminTab}
-        onSelectTab={(tab) => setAdminTab(tab)}
-        onExitAdmin={() => handleNavigate('home')}
-      >
-        {adminTab === 'dashboard' && <AdminDashboard onSelectTab={setAdminTab} />}
-        {adminTab === 'appointments' && <AdminAppointments />}
-        {adminTab === 'patients' && <AdminPatients />}
-        {adminTab === 'posts' && <AdminPosts />}
-        {adminTab === 'banners' && <AdminBanners />}
-        {adminTab === 'stats' && <AdminStats />}
-        {adminTab === 'settings' && <AdminSettings />}
-      </AdminLayout>
+      <ErrorBoundary sectionName="Admin Panel" onReset={() => handleNavigate('home')}>
+        <AdminLayout
+          currentTab={adminTab}
+          onSelectTab={(tab) => setAdminTab(tab)}
+          onExitAdmin={() => handleNavigate('home')}
+        >
+          {adminTab === 'dashboard' && <AdminDashboard onSelectTab={setAdminTab} />}
+          {adminTab === 'appointments' && <AdminAppointments />}
+          {adminTab === 'patients' && <AdminPatients />}
+          {adminTab === 'posts' && <AdminPosts />}
+          {adminTab === 'banners' && <AdminBanners />}
+          {adminTab === 'stats' && <AdminStats />}
+          {adminTab === 'settings' && <AdminSettings />}
+        </AdminLayout>
+      </ErrorBoundary>
     );
   }
+
+  const isKnownPage = KNOWN_PUBLIC_PAGES.has(currentPage);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f3ec] text-[#1c2b26]">
       <Navbar currentPage={currentPage} onNavigate={handleNavigate} />
 
       <main className="flex-1">
-        {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
-        {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
-        {currentPage === 'services' && <ServicesPage onNavigate={handleNavigate} />}
-        {currentPage === 'doctors' && <DoctorsPage onNavigate={handleNavigate} />}
-        {currentPage === 'gallery' && <GalleryPage onNavigate={handleNavigate} />}
-        {currentPage === 'blog' && <BlogPage onNavigate={handleNavigate} />}
-        {currentPage === 'article' && (
-          <ArticlePage
-            slug={pageParams.slug}
-            id={pageParams.id}
-            onNavigate={handleNavigate}
-          />
-        )}
-        {currentPage === 'contact' && <ContactPage onNavigate={handleNavigate} />}
-        {currentPage === 'privacy' && <PrivacyPage onNavigate={handleNavigate} />}
-        {currentPage === 'security' && <SecurityPage onNavigate={handleNavigate} />}
+        <ErrorBoundary sectionName="Page Content" onReset={() => handleNavigate('home')}>
+          {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
+          {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
+          {currentPage === 'services' && <ServicesPage onNavigate={handleNavigate} />}
+          {currentPage === 'doctors' && <DoctorsPage onNavigate={handleNavigate} />}
+          {currentPage === 'gallery' && <GalleryPage onNavigate={handleNavigate} />}
+          {currentPage === 'blog' && <BlogPage onNavigate={handleNavigate} />}
+          {currentPage === 'article' && (
+            <ArticlePage
+              slug={pageParams.slug}
+              id={pageParams.id}
+              onNavigate={handleNavigate}
+            />
+          )}
+          {currentPage === 'contact' && <ContactPage onNavigate={handleNavigate} />}
+          {currentPage === 'privacy' && <PrivacyPage onNavigate={handleNavigate} />}
+          {currentPage === 'security' && <SecurityPage onNavigate={handleNavigate} />}
+
+          {!isKnownPage && (
+            <div className="py-24 px-6 text-center max-w-lg mx-auto">
+              <span className="text-4xl block mb-4">🦷</span>
+              <h1 className="font-serif text-3xl font-bold text-[#1c2b26] mb-2">Page Not Found</h1>
+              <p className="text-sm text-[#5d6b64] mb-6">
+                The requested page (&ldquo;{currentPage}&rdquo;) could not be located.
+              </p>
+              <button
+                onClick={() => handleNavigate('home')}
+                className="btn-solid text-sm py-2.5 px-6 cursor-pointer"
+              >
+                Return to Homepage
+              </button>
+            </div>
+          )}
+        </ErrorBoundary>
       </main>
 
       <Footer onNavigate={handleNavigate} />
@@ -113,9 +168,11 @@ const AppContent: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <ClinicStoreProvider>
-      <AppContent />
-    </ClinicStoreProvider>
+    <ErrorBoundary sectionName="Application">
+      <ClinicStoreProvider>
+        <AppContent />
+      </ClinicStoreProvider>
+    </ErrorBoundary>
   );
 };
 

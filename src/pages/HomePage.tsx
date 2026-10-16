@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Hero } from '../components/home/Hero';
 import { BannerStrip } from '../components/home/BannerStrip';
 import { Marquee } from '../components/home/Marquee';
+import { CountUpNumber } from '../components/common/CountUpNumber';
 import { useClinicStore } from '../context/ClinicStoreContext';
 
 interface HomePageProps {
@@ -10,6 +11,95 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const { config, posts } = useClinicStore();
+
+  const [activeWhyIndex, setActiveWhyIndex] = useState(0);
+
+  const statsSectionRef = useRef<HTMLElement | null>(null);
+  const [isStatsInView, setIsStatsInView] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+      setIsStatsInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Triggers every time the user enters or leaves the section
+        setIsStatsInView(entry.isIntersecting);
+      },
+      {
+        threshold: 0.15,
+      }
+    );
+
+    const el = statsSectionRef.current;
+    if (el) {
+      observer.observe(el);
+    }
+
+    return () => {
+      if (el) observer.unobserve(el);
+      observer.disconnect();
+    };
+  }, []);
+
+  const whyPoints = [
+    {
+      num: '01',
+      title: 'Diagnosis before sales.',
+      desc: 'We show you your X-ray, explain what needs work now and what can wait a year. You decide.',
+      image: '/assets/img/consult-xray.jpg',
+      tag: '01 Digital Diagnostics',
+      caption: 'In-chair digital X-ray review: seeing the problem clearly before deciding treatment.',
+    },
+    {
+      num: '02',
+      title: 'Written estimates.',
+      desc: 'The quote comes on paper (and WhatsApp) with itemised lines. The final bill matches it unless you approve a change.',
+      image: '/assets/img/team-tablet.jpg',
+      tag: '02 Itemised Estimates',
+      caption: 'Every treatment line and cost written down and approved before we begin.',
+    },
+    {
+      num: '03',
+      title: 'Specialists only.',
+      desc: 'Root canals go to an endodontist, implants to an implantologist. No general dentist doing specialist work.',
+      image: '/assets/img/patient-treatment.jpg',
+      tag: '03 MDS Specialists',
+      caption: 'Procedures conducted exclusively by certified specialists with loupes & isolation.',
+    },
+    {
+      num: '04',
+      title: 'Sterilisation you can watch.',
+      desc: 'Class B autoclave, single-use kits opened in front of you. Ask to see the cycle log; we keep it proudly.',
+      image: '/assets/img/sterilization.jpg',
+      tag: '04 Class B Autoclave',
+      caption: 'European standard multi-vacuum sterilisation with sealed single-use patient kits.',
+    },
+  ];
+
+  const safeWhyIndex =
+    whyPoints.length > 0 && activeWhyIndex >= 0 && activeWhyIndex < whyPoints.length
+      ? activeWhyIndex
+      : 0;
+
+  const currentWhyPoint = whyPoints[safeWhyIndex] || {
+    num: '01',
+    title: 'High standard dental care',
+    desc: 'Transparent diagnostics and specialist-first treatments.',
+    image: '/assets/img/consult-xray.jpg',
+    tag: '01 Digital Diagnostics',
+    caption: 'Clear diagnostic review with modern digital imaging.',
+  };
+
+  useEffect(() => {
+    if (whyPoints.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveWhyIndex((prev) => (prev + 1) % whyPoints.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [whyPoints.length]);
 
   return (
     <div className="space-y-0">
@@ -42,7 +132,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
         {/* Featured block */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="rounded-2xl overflow-hidden shadow-xl aspect-4/3 bg-stone-200">
+          <div className="rounded-2xl overflow-hidden shadow-xl aspect-[4/3] bg-stone-200">
             <img
               src="/assets/img/whitening.jpg"
               alt="A whitening session in progress at SmileCraft"
@@ -101,67 +191,151 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* Why patients stay */}
+      {/* Why patients stay — Sequential 4 images & highlighted points */}
       <section className="py-20 px-6 bg-[#fffdf9] border-y border-[#1c2b26]/10">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <div className="rounded-2xl overflow-hidden shadow-xl aspect-4/3">
-            <img
-              src="/assets/img/clinic-wide.jpg"
-              alt="The SmileCraft floor: reception, consult bay and treatment rooms"
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+          {/* Sequential 4 Images Column (Left Side Space) */}
+          <div className="flex flex-col w-full">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl w-full min-h-[380px] h-[440px] sm:h-[480px] lg:h-[520px] aspect-[4/3] bg-stone-900 border border-[#1c2b26]/10">
+              {whyPoints.map((item, idx) => {
+                const isActive = idx === activeWhyIndex;
+                return (
+                  <div
+                    key={item.num}
+                    className={`absolute inset-0 w-full h-full transition-all duration-700 ease-in-out ${
+                      isActive
+                        ? 'opacity-100 scale-100 z-10'
+                        : 'opacity-0 scale-105 z-0 pointer-events-none'
+                    }`}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.title || 'SmileCraft clinic showcase'}
+                      className="w-full h-full object-cover transition-transform duration-[6000ms] ease-out scale-100 hover:scale-105"
+                      loading="lazy"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/assets/img/consult-xray.jpg';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+                  </div>
+                );
+              })}
+
+              {/* Floating Tag Pill */}
+              {currentWhyPoint.tag && (
+                <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-[#09382e]/90 backdrop-blur-md text-white text-xs font-semibold px-3.5 py-1.5 rounded-full border border-white/20 shadow-md">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span>{currentWhyPoint.tag}</span>
+                </div>
+              )}
+
+              {/* Slide Counter */}
+              <div className="absolute top-4 right-4 z-20 font-mono text-xs font-bold text-white bg-black/60 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/15 shadow-md">
+                0{safeWhyIndex + 1} / 0{Math.max(1, whyPoints.length)}
+              </div>
+
+              {/* Active Image Caption & Animated Progress Bar */}
+              {currentWhyPoint.caption && (
+                <div className="absolute bottom-4 left-4 right-4 z-20 bg-black/65 backdrop-blur-md border border-white/15 rounded-2xl p-4 text-white shadow-lg">
+                  <p className="text-xs sm:text-sm font-medium text-emerald-100 leading-snug">
+                    {currentWhyPoint.caption}
+                  </p>
+
+                  {/* Progress bar for active slide duration */}
+                  <div className="mt-3 w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+                    <div
+                      key={safeWhyIndex}
+                      className="h-full bg-gradient-to-r from-emerald-400 to-[#c79a45] rounded-full animate-slideProgress"
+                      style={{ animationDuration: '4000ms' }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sequential step indicator dots */}
+            <div className="flex items-center justify-center gap-2.5 mt-4 px-2">
+              {whyPoints.map((item, idx) => (
+                <button
+                  key={item.num || idx}
+                  onClick={() => setActiveWhyIndex(idx)}
+                  className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                    safeWhyIndex === idx
+                      ? 'w-10 bg-[#0e5c4a]'
+                      : 'w-2.5 bg-[#1c2b26]/20 hover:bg-[#0e5c4a]/50'
+                  }`}
+                  aria-label={`Show step ${item.num || idx + 1}: ${item.title || ''}`}
+                  title={`${item.num || idx + 1} ${item.title || ''}`}
+                />
+              ))}
+            </div>
           </div>
+
+          {/* 4 Sequentially Highlighted Points Column (Right Side) */}
           <div>
             <p className="eyebrow">Why patients stay</p>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#1c2b26] font-semibold mb-6">
               A clinic that runs the way a good clinic should.
             </h2>
-            <ul className="space-y-5 text-sm divide-y divide-[#1c2b26]/10">
-              <li className="pt-3 flex gap-4">
-                <span className="font-serif text-lg font-bold text-[#0e5c4a]">01</span>
-                <div>
-                  <strong className="block text-[#1c2b26] font-semibold text-base mb-1">
-                    Diagnosis before sales.
-                  </strong>
-                  <p className="text-[#5d6b64]">
-                    We show you your X-ray, explain what needs work now and what can wait a year. You decide.
-                  </p>
-                </div>
-              </li>
-              <li className="pt-4 flex gap-4">
-                <span className="font-serif text-lg font-bold text-[#0e5c4a]">02</span>
-                <div>
-                  <strong className="block text-[#1c2b26] font-semibold text-base mb-1">
-                    Written estimates.
-                  </strong>
-                  <p className="text-[#5d6b64]">
-                    The quote comes on paper (and WhatsApp) with itemised lines. The final bill matches it unless you approve a change.
-                  </p>
-                </div>
-              </li>
-              <li className="pt-4 flex gap-4">
-                <span className="font-serif text-lg font-bold text-[#0e5c4a]">03</span>
-                <div>
-                  <strong className="block text-[#1c2b26] font-semibold text-base mb-1">
-                    Specialists only.
-                  </strong>
-                  <p className="text-[#5d6b64]">
-                    Root canals go to an endodontist, implants to an implantologist. No general dentist doing specialist work.
-                  </p>
-                </div>
-              </li>
-              <li className="pt-4 flex gap-4">
-                <span className="font-serif text-lg font-bold text-[#0e5c4a]">04</span>
-                <div>
-                  <strong className="block text-[#1c2b26] font-semibold text-base mb-1">
-                    Sterilisation you can watch.
-                  </strong>
-                  <p className="text-[#5d6b64]">
-                    Class B autoclave, single-use kits opened in front of you. Ask to see the cycle log; we keep it proudly.
-                  </p>
-                </div>
-              </li>
+
+            <ul className="space-y-4 text-sm">
+              {whyPoints.map((point, idx) => {
+                const isActive = idx === activeWhyIndex;
+                return (
+                  <li
+                    key={point.num}
+                    onClick={() => setActiveWhyIndex(idx)}
+                    className={`relative p-5 rounded-2xl transition-all duration-300 cursor-pointer flex gap-4 items-start border overflow-hidden ${
+                      isActive
+                        ? 'bg-[#0e5c4a]/8 border-[#0e5c4a] shadow-md translate-x-1 sm:translate-x-2'
+                        : 'bg-white/60 hover:bg-white border-stone-200/70 hover:border-[#1c2b26]/20 opacity-80 hover:opacity-100'
+                    }`}
+                  >
+                    {/* Point Number */}
+                    <span
+                      className={`font-serif text-sm font-bold w-9 h-9 rounded-full shrink-0 flex items-center justify-center transition-all ${
+                        isActive
+                          ? 'bg-[#0e5c4a] text-white shadow-xs scale-105'
+                          : 'text-[#0e5c4a] bg-[#0e5c4a]/10'
+                      }`}
+                    >
+                      {point.num}
+                    </span>
+
+                    {/* Title and Description */}
+                    <div className="flex-1 min-w-0">
+                      <strong
+                        className={`block text-base leading-snug transition-colors ${
+                          isActive
+                            ? 'text-[#09382e] font-bold'
+                            : 'text-[#1c2b26] font-semibold'
+                        }`}
+                      >
+                        {point.title}
+                      </strong>
+                      <p
+                        className={`text-xs sm:text-sm mt-1.5 leading-relaxed transition-colors ${
+                          isActive ? 'text-[#1c2b26] font-medium' : 'text-[#5d6b64]'
+                        }`}
+                      >
+                        {point.desc}
+                      </p>
+                    </div>
+
+                    {/* Active Sequential Progress Bar */}
+                    {isActive && (
+                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#0e5c4a]/15 overflow-hidden">
+                        <div
+                          key={`progress-${activeWhyIndex}`}
+                          className="h-full bg-[#0e5c4a] animate-slideProgress"
+                          style={{ animationDuration: '4000ms' }}
+                        />
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>
@@ -231,22 +405,49 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Stats Counter Strip */}
-      <section className="bg-[#09382e] text-white py-16 px-6">
+      <section
+        ref={statsSectionRef}
+        className="bg-[#09382e] text-white py-16 px-6 relative overflow-hidden transition-colors duration-500"
+      >
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <b className="font-serif text-4xl sm:text-5xl text-amber-200 block">12+</b>
+          <div
+            className={`transition-all duration-700 ease-out transform ${
+              isStatsInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-60 translate-y-3 scale-[0.98]'
+            }`}
+          >
+            <b className="font-serif text-4xl sm:text-5xl text-amber-200 block tabular-nums">
+              <CountUpNumber end={12} suffix="+" duration={1800} trigger={isStatsInView} replayOnEnter />
+            </b>
             <span className="text-xs text-[#bfd6cd] uppercase tracking-wider mt-1 block">Years in practice</span>
           </div>
-          <div>
-            <b className="font-serif text-4xl sm:text-5xl text-amber-200 block">18,000+</b>
+          <div
+            className={`transition-all duration-700 delay-100 ease-out transform ${
+              isStatsInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-60 translate-y-3 scale-[0.98]'
+            }`}
+          >
+            <b className="font-serif text-4xl sm:text-5xl text-amber-200 block tabular-nums">
+              <CountUpNumber end={18000} suffix="+" duration={2200} trigger={isStatsInView} replayOnEnter />
+            </b>
             <span className="text-xs text-[#bfd6cd] uppercase tracking-wider mt-1 block">Smiles treated</span>
           </div>
-          <div>
-            <b className="font-serif text-4xl sm:text-5xl text-amber-200 block">3,200+</b>
+          <div
+            className={`transition-all duration-700 delay-200 ease-out transform ${
+              isStatsInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-60 translate-y-3 scale-[0.98]'
+            }`}
+          >
+            <b className="font-serif text-4xl sm:text-5xl text-amber-200 block tabular-nums">
+              <CountUpNumber end={3200} suffix="+" duration={2000} trigger={isStatsInView} replayOnEnter />
+            </b>
             <span className="text-xs text-[#bfd6cd] uppercase tracking-wider mt-1 block">Implants placed</span>
           </div>
-          <div>
-            <b className="font-serif text-4xl sm:text-5xl text-amber-200 block">4.9 ★</b>
+          <div
+            className={`transition-all duration-700 delay-300 ease-out transform ${
+              isStatsInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-60 translate-y-3 scale-[0.98]'
+            }`}
+          >
+            <b className="font-serif text-4xl sm:text-5xl text-amber-200 block tabular-nums">
+              <CountUpNumber end={4.9} decimals={1} suffix=" ★" duration={1800} trigger={isStatsInView} replayOnEnter />
+            </b>
             <span className="text-xs text-[#bfd6cd] uppercase tracking-wider mt-1 block">Google rating</span>
           </div>
         </div>

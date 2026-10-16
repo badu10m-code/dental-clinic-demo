@@ -13,25 +13,28 @@ export const Hero: React.FC<HeroProps> = ({ onBookClick }) => {
   const [charIdx, setCharIdx] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const safeWordIdx = words.length > 0 && wordIdx >= 0 && wordIdx < words.length ? wordIdx : 0;
+  const currentWord = words[safeWordIdx] || '';
+
   useEffect(() => {
-    const currentWord = words[wordIdx];
+    if (!currentWord) return;
     let timeout: ReturnType<typeof setTimeout>;
 
-    if (!isDeleting && charIdx === currentWord.length) {
+    if (!isDeleting && charIdx >= currentWord.length) {
       timeout = setTimeout(() => setIsDeleting(true), 1800);
-    } else if (isDeleting && charIdx === 0) {
+    } else if (isDeleting && charIdx <= 0) {
       setIsDeleting(false);
-      setWordIdx((prev) => (prev + 1) % words.length);
+      setWordIdx((prev) => (prev + 1) % Math.max(1, words.length));
       timeout = setTimeout(() => {}, 350);
     } else {
       const speed = isDeleting ? 45 : 110;
       timeout = setTimeout(() => {
-        setCharIdx((prev) => prev + (isDeleting ? -1 : 1));
+        setCharIdx((prev) => Math.max(0, prev + (isDeleting ? -1 : 1)));
       }, speed);
     }
 
     return () => clearTimeout(timeout);
-  }, [charIdx, isDeleting, wordIdx]);
+  }, [charIdx, isDeleting, safeWordIdx, currentWord, words.length]);
 
   return (
     <header className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#092a23] text-white">
@@ -54,7 +57,7 @@ export const Hero: React.FC<HeroProps> = ({ onBookClick }) => {
         <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-semibold leading-[1.12] max-w-2xl text-white">
           Dental care that starts with{' '}
           <span className="text-emerald-300 border-b-2 border-emerald-400">
-            {words[wordIdx].slice(0, charIdx)}
+            {currentWord.slice(0, charIdx)}
           </span>
           <span className="inline-block w-0.5 h-10 bg-emerald-300 ml-1 translate-y-1 animate-pulse" />
         </h1>
