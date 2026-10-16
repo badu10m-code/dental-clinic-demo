@@ -223,8 +223,8 @@ footer .fine{border-top:1px solid rgba(255,255,255,.14);margin-top:52px;padding-
 .progress{position:fixed;top:0;left:0;height:3px;background:var(--gold);z-index:100;width:0;transition:width .1s linear}
 .caret{display:inline-block;width:3px;height:.85em;background:var(--gold);margin-left:8px;vertical-align:-.06em;animation:blink 1.05s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-.reveal-img{clip-path:inset(0 0 100% 0);transition:clip-path 1.1s cubic-bezier(.2,.8,.2,1)}
-.reveal-img.in{clip-path:inset(0 0 0% 0)}
+.reveal-img.pre{clip-path:inset(0 0 100% 0);transition:clip-path 1.1s cubic-bezier(.2,.8,.2,1)}
+.reveal-img.pre.in{clip-path:inset(0 0 0% 0)}
 .btn-solid{position:relative;overflow:hidden}
 .btn-solid::after{content:"";position:absolute;top:0;left:-130%;width:55%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);transition:left .7s ease}
 .btn-solid:hover::after{left:140%}

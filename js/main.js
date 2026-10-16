@@ -70,8 +70,12 @@
     b.style.width=(max>0?(d.scrollTop/max*100):0)+"%";
   },{passive:true});
 })();
-/* clip-path image reveal */
+/* clip-path image reveal, fail-safe: image starts visible unless JS arms it, and a timer force-reveals */
 (function(){
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.25});
-  document.querySelectorAll(".reveal-img").forEach(function(el){io.observe(el);});
+  var els=Array.prototype.slice.call(document.querySelectorAll(".reveal-img"));
+  if(!els.length)return;
+  els.forEach(function(el){el.classList.add("pre");});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.05,rootMargin:"300px 0px 80px 0px"});
+  els.forEach(function(el){io.observe(el);});
+  setTimeout(function(){els.forEach(function(el){el.classList.add("in");});},4000);
 })();
