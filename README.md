@@ -1,24 +1,86 @@
-# SmileCraft Dental Studio — demo clinic website
+# SmileCraft Dental Studio — React Application
 
-A premium, multi-page demo website for pitching to a dental clinic. All clinic names, doctors, reviews and phone numbers are **sample data**.
+A modern, responsive React + TypeScript application for SmileCraft Dental Studio, an MDS specialist dental clinic based in Andheri West, Mumbai. Rewritten from the original project with full feature parity, responsive components, and an integrated clinic management console.
 
-**Live:** https://badu10m-code.github.io/dental-clinic-demo/
+## Architecture & Technology
 
-## What is inside
+- **Framework**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS with custom editorial brand styling (Fraunces serif, Inter sans, dark teal palette, and subtle micro-interactions)
+- **Data & State**: `ClinicStoreContext` with automatic `localStorage` synchronization (`scd2_*` keys)
+- **Dev Server**: Runs on port 3000 (`vite --host 0.0.0.0 --port 3000`)
 
-- 9 public pages (home, about, services + prices, doctors, gallery, booking + FAQ, blog, privacy, security) and 5 long-form patient articles
-- Editorial design: featured blocks, hairline lists, no uniform card grids; Fraunces + Inter; varied animations (hero ken-burns, scroll reveals, counters, marquee, hover micro-interactions, accordion)
-- Landscape hero image, high-quality photography throughout
-- SEO: full meta + Open Graph, canonicals, Dentist/Article/FAQPage/Person/Breadcrumb JSON-LD, sitemap.xml, robots.txt, llms.txt for AI answer engines (GEO)
-- India-optimized: ₹ pricing, UPI/EMI payments, WhatsApp-first booking, same-day emergency slots
-- Security: strict CSP, input sanitisation, no trackers, external links hardened; honest security page
-- **Admin panel (demo, no password by design):** /admin/ — dashboard, appointments with status workflow and one-click WhatsApp confirmation drafts (wa.me prefilled with name, date, slot, ref, address), patients ledger, clinic updates publisher, site-wide settings. Data lives in the browser's localStorage only (seeded with 3 sample appointments). The banner inside states this plainly.
-- Booking form on contact.html writes into the same store, so you can book from the site and see it appear in the admin panel instantly.
+## Ported Features
 
-## Going live (for the client)
+### Public Website
+- **Home**:
+  - Hero with animated typewriter effect ("listening.", "comfort.", "honesty.", "care.")
+  - Announcement carousel strip driven by the admin banner manager with auto-rotation
+  - Animated marquee ticker of dental specialties
+  - Featured treatments with transparent ₹ pricing and clinical overview
+  - "Why patients stay" philosophy highlights
+  - Specialists overview with live today's open slots ticker
+  - Key statistics counter strip (12+ years, 18,000+ smiles, 3,200+ implants, 4.9★ rating)
+  - Verified patient testimonials
+  - Latest clinical articles and live clinic updates
+  - Same-day emergency booking strip and floating WhatsApp action button
+- **About Us**:
+  - Clinic founding story, core values, sterilization protocol (Class B autoclave transparency), and studio timeline from 2013 to 2025
+- **Services & Transparent Pricing**:
+  - Full treatment catalogue with realistic Indian Rupee (₹) price ranges for single-sitting root canals, CBCT implants, invisible aligners, veneers, scaling, and kids' dentistry
+- **Our Doctors**:
+  - Comprehensive clinical profiles, qualifications, and consultation timings for Dr. Ananya Sharma (Endodontist) and Dr. Rohan Mehta (Prosthodontist & Implantologist)
+- **Clinic Gallery**:
+  - High-resolution photographic tour of operatories, recovery lounge, sterilization bay, kids' playhouse, and smile transformations with lightbox viewer
+- **Blog & Clinical Guides**:
+  - Long-form patient guides on root canals, implants, braces vs. aligners, teeth whitening, and pediatric visits
+  - Category filter chips (Root canal, Implants, Braces, Kids, Cosmetic, Prevention, Clinic updates)
+  - Dynamic clinic updates created in the admin portal render instantly in the blog
+- **Contact & Online Booking**:
+  - Interactive appointment booking with validation, date selector, 6 time slot chips, doctor selection, and duplicate booking prevention
+  - Instant booking confirmation card with reference ID (`SCD-XXXXXX`) and WhatsApp pre-filled draft link
+  - Embedded clinic Google map and 10 expandable FAQ accordions
+- **Privacy Policy & Security**:
+  - Transparent data practices and anti-tracking policies
 
-1. Swap sample data for the real clinic's details (Settings tab holds phone/address/hours in demo; source data in js/store.js).
-2. Replace localStorage store with a real backend (encrypted DB + auth) as described on security.html.
-3. Add the real domain, Google Search Console token and IndexNow key.
+### Clinic Admin Console (`/admin`)
+- **Dashboard**:
+  - Metric cards: Today's appointments, Pending confirmations, Bookings this week, Total patients
+  - Today's schedule table with 1-click WhatsApp confirmation drafts and phone call links
+  - Quick action shortcuts
+- **Appointments Manager**:
+  - Search across patient name, phone, ref, and service
+  - Multi-criteria filtering by status, doctor, and date
+  - In-line time slot editing with quick chips and custom time picker
+  - Status progression workflow (New → Confirmed → Done)
+  - Expandable WhatsApp confirmation draft generator with pre-populated patient details
+  - Desk booking form for walk-ins and phone calls
+  - CSV export (`smilecraft-appointments.csv`)
+- **Patients Ledger**:
+  - Searchable directory of registered patients with visit history and notes
+  - Form to record new patient files
+- **Blog & Updates Manager**:
+  - Author and publish clinic notices and checkup camps directly to the public website
+- **Banner Strip Manager**:
+  - Real-time live banner preview
+  - Template banners (Festival / Signature themes) and custom image banners with upload
+  - Live / Hidden toggles and delete controls
+- **Booking Stats & Analytics**:
+  - 7-day bookings bar chart
+  - Status breakdown percentage bars
+  - Top 5 requested dental treatments
+  - Booking channels distribution (Online web forms vs. Desk / phone walk-ins)
+- **Clinic Settings**:
+  - Configurable clinic name, phone, WhatsApp number, physical address, and operating hours that immediately update across the entire application
 
-Built with plain HTML/CSS/JS. No frameworks, no trackers.
+## Running the Project
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```

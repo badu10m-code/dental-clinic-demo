@@ -1,0 +1,8 @@
+{
+  "name": "SmileCraft Dental Studio",
+  "description": "Specialist dental clinic portal and management platform in Andheri West, Mumbai with online booking, doctor schedules, service pricing, and clinic admin console.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

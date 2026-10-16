@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f7f3ec;
+  --surface: #fffdf9;
+  --ink: #1c2b26;
+  --muted: #5d6b64;
+  --teal: #0e5c4a;
+  --teal-ink: #09382e;
+  --gold: #c79a45;
+  --terra: #c96f4a;
+  --line: rgba(28, 43, 38, 0.14);
+  --line-soft: rgba(28, 43, 38, 0.08);
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "Inter", system-ui, sans-serif;
+  --shadow: 0 24px 60px -32px rgba(28, 43, 38, 0.35);
+  --r: 14px;
+}
+
+body {
+  font-family: var(--sans);
+  background-color: var(--bg);
+  color: var(--ink);
+  line-height: 1.65;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.serif {
+  font-family: var(--serif);
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--teal);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.lede {
+  font-size: 1.08rem;
+  max-width: 58ch;
+  color: var(--muted);
+}
+
+/* Marquee animation */
+@keyframes marqueeScroll {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  gap: 64px;
+  width: max-content;
+  animation: marqueeScroll 34s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.badge.new {
+  background: #fdf3e0;
+  color: #8a6114;
+}
+.badge.confirmed {
+  background: #e3efe9;
+  color: var(--teal);
+}
+.badge.done {
+  background: #e8e8e4;
+  color: #5d6b64;
+}
+.badge.cancelled {
+  background: #f6e4e0;
+  color: #b3432b;
+}
+.badge.src {
+  background: #ece9e2;
+  color: #6b6152;
+  font-size: 0.68rem;
+}
+
+/* Custom interactive chips */
+.chip {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.chip.on {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+
+/* Buttons */
+.btn-solid {
+  background-color: var(--teal);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+.btn-solid:hover {
+  background-color: var(--teal-ink);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.btn-ghost {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+.btn-ghost:hover {
+  border-color: var(--teal);
+  color: var(--teal);
+}
