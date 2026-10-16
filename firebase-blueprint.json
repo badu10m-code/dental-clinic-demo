@@ -1,0 +1,286 @@
+{
+  "entities": {
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Patient appointment booking and status record",
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "description": "Unique booking reference code (e.g. SCD-ABC123)",
+          "maxLength": 32
+        },
+        "name": {
+          "type": "string",
+          "description": "Patient full name",
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "description": "Patient contact phone number",
+          "maxLength": 25
+        },
+        "service": {
+          "type": "string",
+          "description": "Selected dental treatment or consultation",
+          "maxLength": 100
+        },
+        "doctor": {
+          "type": "string",
+          "description": "Selected or assigned doctor",
+          "maxLength": 100
+        },
+        "date": {
+          "type": "string",
+          "description": "Appointment date in YYYY-MM-DD format",
+          "maxLength": 20
+        },
+        "slot": {
+          "type": "string",
+          "description": "Time slot string",
+          "maxLength": 30
+        },
+        "note": {
+          "type": "string",
+          "description": "Optional patient symptoms or notes",
+          "maxLength": 1000
+        },
+        "source": {
+          "type": "string",
+          "description": "Booking source",
+          "enum": ["online", "call"]
+        },
+        "status": {
+          "type": "string",
+          "description": "Current appointment lifecycle status",
+          "enum": ["new", "confirmed", "done", "cancelled"]
+        },
+        "created": {
+          "type": "string",
+          "description": "ISO timestamp of booking creation",
+          "maxLength": 50
+        }
+      },
+      "required": ["ref", "name", "phone", "service", "doctor", "date", "slot", "source", "status", "created"]
+    },
+    "Patient": {
+      "title": "Patient",
+      "description": "Clinic patient ledger entry",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Patient name",
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "description": "Patient phone number",
+          "maxLength": 25
+        },
+        "firstVisit": {
+          "type": "string",
+          "description": "Date of first clinic visit",
+          "maxLength": 30
+        },
+        "visits": {
+          "type": "number",
+          "description": "Total visits count"
+        },
+        "note": {
+          "type": "string",
+          "description": "Clinical or administrative note",
+          "maxLength": 1000
+        }
+      },
+      "required": ["name", "phone", "firstVisit", "visits"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Clinic announcement, camp notice, or blog update",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique post identifier",
+          "maxLength": 64
+        },
+        "title": {
+          "type": "string",
+          "description": "Post headline",
+          "maxLength": 200
+        },
+        "category": {
+          "type": "string",
+          "description": "Category key",
+          "maxLength": 50
+        },
+        "image": {
+          "type": "string",
+          "description": "Cover image path or URL",
+          "maxLength": 500
+        },
+        "body": {
+          "type": "string",
+          "description": "Article or update text content",
+          "maxLength": 10000
+        },
+        "created": {
+          "type": "string",
+          "description": "ISO timestamp of publication",
+          "maxLength": 50
+        }
+      },
+      "required": ["id", "title", "category", "body", "created"]
+    },
+    "Banner": {
+      "title": "Banner",
+      "description": "Top notice or promo banner strip",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique banner ID",
+          "maxLength": 64
+        },
+        "type": {
+          "type": "string",
+          "description": "Banner layout style",
+          "enum": ["template", "image"]
+        },
+        "template": {
+          "type": "string",
+          "description": "Template preset identifier",
+          "maxLength": 50
+        },
+        "title": {
+          "type": "string",
+          "description": "Banner headline",
+          "maxLength": 200
+        },
+        "sub": {
+          "type": "string",
+          "description": "Secondary copy",
+          "maxLength": 300
+        },
+        "cta": {
+          "type": "string",
+          "description": "Call to action text",
+          "maxLength": 50
+        },
+        "link": {
+          "type": "string",
+          "description": "Action target destination",
+          "maxLength": 300
+        },
+        "img": {
+          "type": "string",
+          "description": "Optional background or illustration image URL",
+          "maxLength": 500
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Whether banner is currently published"
+        },
+        "created": {
+          "type": "string",
+          "description": "ISO timestamp of creation",
+          "maxLength": 50
+        }
+      },
+      "required": ["id", "type", "title", "sub", "cta", "link", "active", "created"]
+    },
+    "ClinicConfig": {
+      "title": "ClinicConfig",
+      "description": "Global clinic metadata, working hours, and contact details",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Clinic display name",
+          "maxLength": 120
+        },
+        "phone": {
+          "type": "string",
+          "description": "Formatted phone number",
+          "maxLength": 30
+        },
+        "phoneRaw": {
+          "type": "string",
+          "description": "Raw unformatted phone number for tel links",
+          "maxLength": 25
+        },
+        "whatsapp": {
+          "type": "string",
+          "description": "WhatsApp number digits",
+          "maxLength": 25
+        },
+        "address": {
+          "type": "string",
+          "description": "Physical clinic address",
+          "maxLength": 300
+        },
+        "hours": {
+          "type": "string",
+          "description": "Working hours description",
+          "maxLength": 200
+        },
+        "mapQuery": {
+          "type": "string",
+          "description": "Google Maps search string",
+          "maxLength": 200
+        }
+      },
+      "required": ["name", "phone", "phoneRaw", "whatsapp", "address", "hours", "mapQuery"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Authorized administrator or staff member",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Admin email address",
+          "maxLength": 120
+        },
+        "role": {
+          "type": "string",
+          "description": "Admin permission level",
+          "enum": ["admin", "staff"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Creation timestamp",
+          "maxLength": 50
+        }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/appointments/{appointmentId}": {
+      "schema": "Appointment",
+      "description": "Patient appointments and booking requests"
+    },
+    "/patients/{patientId}": {
+      "schema": "Patient",
+      "description": "Clinic patient ledger records"
+    },
+    "/posts/{postId}": {
+      "schema": "Post",
+      "description": "Clinic news, community camps, and dental health updates"
+    },
+    "/banners/{bannerId}": {
+      "schema": "Banner",
+      "description": "Promotional and announcement banner strips"
+    },
+    "/settings/{settingId}": {
+      "schema": "ClinicConfig",
+      "description": "Clinic contact details, working hours, and address configuration"
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Authorized clinic administrators and dentists"
+    }
+  }
+}

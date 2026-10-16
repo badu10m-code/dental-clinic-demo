@@ -1,11 +1,24 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+} from 'firebase/firestore';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { db, auth, signInWithGoogle, logOut } from '../lib/firebase';
+import { handleFirestoreError, OperationType } from '../lib/firestoreErrors';
+import {
   Appointment,
   Patient,
   Post,
   Banner,
   ClinicConfig,
-  AppointmentStatus
+  AppointmentStatus,
 } from '../types';
 
 const STORAGE_KEYS = {
@@ -26,6 +39,8 @@ export const DEFAULT_CFG: ClinicConfig = {
   hours: 'Mon to Sat 10:00 AM to 8:00 PM · Sunday by appointment',
   mapQuery: 'Veera Desai Road, Andheri West, Mumbai',
 };
+
+const BOOTSTRAP_ADMIN_EMAIL = 'sudipta2santra@gmail.com';
 
 function readStorage<T>(key: string, fallback: T): T {
   try {
@@ -263,7 +278,7 @@ function getInitialSeed(): {
   };
 }
 
-interface ClinicStoreContextType {
+export interface ClinicStoreContextType {
   appointments: Appointment[];
   patients: Patient[];
   posts: Post[];
@@ -285,6 +300,12 @@ interface ClinicStoreContextType {
   deleteBanner: (id: string) => void;
   updateConfig: (cfg: Partial<ClinicConfig>) => void;
   generateRef: () => string;
+  // Firebase State
+  currentUser: User | null;
+  isAdmin: boolean;
+  isFirebaseReady: boolean;
+  loginWithGoogle: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const ClinicStoreContext = createContext<ClinicStoreContextType | null>(null);
@@ -311,6 +332,9 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     readStorage(STORAGE_KEYS.ovr, seed.ovr)
   );
 
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isFirebaseReady, setIsFirebaseReady] = useState<boolean>(false);
   const [toast, setToast] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -320,7 +344,133 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }, 2800);
   };
 
-  // Sync to localStorage
+  // 1. Firebase Auth Listener
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+      setIsFirebaseReady(true);
+      if (user) {
+        const isOwner =
+          user.email?.toLowerCase() === BOOTSTRAP_ADMIN_EMAIL.toLowerCase();
+        setIsAdmin(isOwner);
+
+        // Check or register admin doc if owner
+        if (isOwner) {
+          try {
+            const adminDocRef = doc(db, 'admins', user.uid);
+            const snap = await getDoc(adminDocRef);
+            if (!snap.exists()) {
+              await setDoc(adminDocRef, {
+                email: user.email,
+                role: 'admin',
+                createdAt: new Date().toISOString(),
+              });
+            }
+          } catch (e) {
+            console.warn('Admin doc check skipped or not needed:', e);
+          }
+        }
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Real-time Firestore Listeners for public content (Posts, Banners, Settings)
+  useEffect(() => {
+    // Posts listener
+    const unsubPosts = onSnapshot(
+      collection(db, 'posts'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const loadedPosts: Post[] = [];
+          snapshot.forEach((d) => loadedPosts.push(d.data() as Post));
+          loadedPosts.sort((a, b) => b.created.localeCompare(a.created));
+          setPosts(loadedPosts);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'posts');
+      }
+    );
+
+    // Banners listener
+    const unsubBanners = onSnapshot(
+      collection(db, 'banners'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const loadedBanners: Banner[] = [];
+          snapshot.forEach((d) => loadedBanners.push(d.data() as Banner));
+          setBanners(loadedBanners);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'banners');
+      }
+    );
+
+    // Settings listener
+    const unsubSettings = onSnapshot(
+      doc(db, 'settings', 'clinic'),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setConfig(snapshot.data() as ClinicConfig);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'settings/clinic');
+      }
+    );
+
+    return () => {
+      unsubPosts();
+      unsubBanners();
+      unsubSettings();
+    };
+  }, []);
+
+  // 3. Admin-only Appointments & Patients Listener (when authenticated as Admin)
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const unsubAppts = onSnapshot(
+      collection(db, 'appointments'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const loadedAppts: Appointment[] = [];
+          snapshot.forEach((d) => loadedAppts.push(d.data() as Appointment));
+          loadedAppts.sort((a, b) => b.created.localeCompare(a.created));
+          setAppointments(loadedAppts);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'appointments');
+      }
+    );
+
+    const unsubPatients = onSnapshot(
+      collection(db, 'patients'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const loadedPatients: Patient[] = [];
+          snapshot.forEach((d) => loadedPatients.push(d.data() as Patient));
+          setPatients(loadedPatients);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'patients');
+      }
+    );
+
+    return () => {
+      unsubAppts();
+      unsubPatients();
+    };
+  }, [isAdmin]);
+
+  // Sync to localStorage as offline safety
   useEffect(() => {
     writeStorage(STORAGE_KEYS.appt, appointments);
   }, [appointments]);
@@ -341,6 +491,54 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     writeStorage(STORAGE_KEYS.cfg, config);
   }, [config]);
 
+  // Seed Firestore if initial collections are empty
+  useEffect(() => {
+    if (!isAdmin) return;
+    const seedCloudIfEmpty = async () => {
+      try {
+        const postsSnap = await getDocs(collection(db, 'posts'));
+        if (postsSnap.empty) {
+          for (const p of seed.posts) {
+            await setDoc(doc(db, 'posts', p.id), p);
+          }
+        }
+
+        const banSnap = await getDocs(collection(db, 'banners'));
+        if (banSnap.empty) {
+          for (const b of seed.banners) {
+            await setDoc(doc(db, 'banners', b.id), b);
+          }
+        }
+
+        const cfgSnap = await getDoc(doc(db, 'settings', 'clinic'));
+        if (!cfgSnap.exists()) {
+          await setDoc(doc(db, 'settings', 'clinic'), DEFAULT_CFG);
+        }
+
+        const apptSnap = await getDocs(collection(db, 'appointments'));
+        if (apptSnap.empty) {
+          for (const a of seed.appts) {
+            await setDoc(doc(db, 'appointments', a.ref), a);
+          }
+        }
+
+        const patSnap = await getDocs(collection(db, 'patients'));
+        if (patSnap.empty) {
+          for (let i = 0; i < seed.patients.length; i++) {
+            const p = seed.patients[i];
+            const patId = `pat-${i + 1}`;
+            await setDoc(doc(db, 'patients', patId), p);
+          }
+        }
+      } catch (err) {
+        console.warn('Initial Firestore seed skipped or restricted:', err);
+      }
+    };
+
+    seedCloudIfEmpty();
+  }, [isAdmin]);
+
+  // Actions
   const addAppointment = (apptData: Omit<Appointment, 'ref' | 'created'>): Appointment => {
     const newAppt: Appointment = {
       ...apptData,
@@ -349,6 +547,12 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
     const updated = [newAppt, ...appointments];
     setAppointments(updated);
+
+    // Sync to Firestore
+    setDoc(doc(db, 'appointments', newAppt.ref), newAppt).catch((err) => {
+      console.error('Firestore appointment write error:', err);
+      handleFirestoreError(err, OperationType.CREATE, `appointments/${newAppt.ref}`);
+    });
 
     // Also update patients ledger
     const digits = newAppt.phone.replace(/\D/g, '');
@@ -381,6 +585,10 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
       prev.map((a) => (a.ref === ref ? { ...a, status } : a))
     );
     showToast(`Status updated: ${status}`);
+
+    updateDoc(doc(db, 'appointments', ref), { status }).catch((err) => {
+      console.warn('Firestore updateAppointmentStatus fallback:', err);
+    });
   };
 
   const updateAppointmentSlot = (ref: string, slot: string) => {
@@ -388,16 +596,29 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
       prev.map((a) => (a.ref === ref ? { ...a, slot } : a))
     );
     showToast(`Time slot updated: ${slot}`);
+
+    updateDoc(doc(db, 'appointments', ref), { slot }).catch((err) => {
+      console.warn('Firestore updateAppointmentSlot fallback:', err);
+    });
   };
 
   const deleteAppointment = (ref: string) => {
     setAppointments((prev) => prev.filter((a) => a.ref !== ref));
     showToast('Appointment deleted');
+
+    deleteDoc(doc(db, 'appointments', ref)).catch((err) => {
+      console.warn('Firestore deleteAppointment fallback:', err);
+    });
   };
 
   const addPatient = (patient: Patient) => {
     setPatients((prev) => [patient, ...prev]);
     showToast('Patient added to ledger');
+
+    const patId = `pat-${Date.now()}`;
+    setDoc(doc(db, 'patients', patId), patient).catch((err) => {
+      console.warn('Firestore addPatient fallback:', err);
+    });
   };
 
   const removePatient = (index: number) => {
@@ -413,12 +634,20 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
     setPosts((prev) => [newPost, ...prev]);
     showToast('Published to clinic updates');
+
+    setDoc(doc(db, 'posts', newPost.id), newPost).catch((err) => {
+      console.warn('Firestore addPost fallback:', err);
+    });
     return newPost;
   };
 
   const deletePost = (id: string) => {
     setPosts((prev) => prev.filter((p) => p.id !== id));
     showToast('Post removed');
+
+    deleteDoc(doc(db, 'posts', id)).catch((err) => {
+      console.warn('Firestore deletePost fallback:', err);
+    });
   };
 
   const addBanner = (bannerData: Omit<Banner, 'id' | 'created'>): Banner => {
@@ -429,6 +658,10 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
     setBanners((prev) => [newBanner, ...prev]);
     showToast('Banner created and active');
+
+    setDoc(doc(db, 'banners', newBanner.id), newBanner).catch((err) => {
+      console.warn('Firestore addBanner fallback:', err);
+    });
     return newBanner;
   };
 
@@ -438,6 +671,9 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
         if (b.id === id) {
           const nextActive = !b.active;
           showToast(nextActive ? 'Banner is live' : 'Banner hidden');
+          updateDoc(doc(db, 'banners', b.id), { active: nextActive }).catch((err) => {
+            console.warn('Firestore toggleBanner fallback:', err);
+          });
           return { ...b, active: nextActive };
         }
         return b;
@@ -448,6 +684,10 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const deleteBanner = (id: string) => {
     setBanners((prev) => prev.filter((b) => b.id !== id));
     showToast('Banner deleted');
+
+    deleteDoc(doc(db, 'banners', id)).catch((err) => {
+      console.warn('Firestore deleteBanner fallback:', err);
+    });
   };
 
   const updateConfig = (cfg: Partial<ClinicConfig>) => {
@@ -459,9 +699,32 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (updated.whatsapp) {
         updated.whatsapp = updated.whatsapp.replace(/\D/g, '');
       }
+      setDoc(doc(db, 'settings', 'clinic'), updated).catch((err) => {
+        console.warn('Firestore updateConfig fallback:', err);
+      });
       return updated;
     });
     showToast('Clinic settings saved');
+  };
+
+  const loginWithGoogle = async () => {
+    try {
+      await signInWithGoogle();
+      showToast('Signed in successfully');
+    } catch (e: any) {
+      console.error('Google sign in error:', e);
+      showToast(e?.message || 'Failed to sign in with Google');
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await logOut();
+      showToast('Signed out');
+    } catch (e: any) {
+      console.error('Logout error:', e);
+      showToast('Error signing out');
+    }
   };
 
   return (
@@ -488,11 +751,16 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
         deleteBanner,
         updateConfig,
         generateRef,
+        currentUser,
+        isAdmin,
+        isFirebaseReady,
+        loginWithGoogle,
+        logout,
       }}
     >
       {children}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-[#09382e] text-white px-6 py-3 rounded-full shadow-2xl text-sm font-medium animate-bounce">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-[#09382e] text-white px-6 py-3 rounded-full shadow-2xl text-sm font-medium animate-bounce border border-emerald-500/30">
           {toast}
         </div>
       )}

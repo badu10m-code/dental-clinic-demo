@@ -1,0 +1,149 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedAdmin() {
+      return isSignedIn() && (
+        (request.auth.token.email == "sudipta2santra@gmail.com" && request.auth.token.email_verified == true) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Validation Helpers
+    function isValidAppointment(data) {
+      return data.keys().hasAll(['ref', 'name', 'phone', 'service', 'doctor', 'date', 'slot', 'source', 'status', 'created']) &&
+        data.keys().hasOnly(['ref', 'name', 'phone', 'service', 'doctor', 'date', 'slot', 'note', 'source', 'status', 'created', 'userId']) &&
+        data.ref is string && data.ref.size() > 0 && data.ref.size() <= 32 &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+        data.phone is string && data.phone.size() > 0 && data.phone.size() <= 25 &&
+        data['service'] is string && data['service'].size() <= 100 &&
+        data.doctor is string && data.doctor.size() <= 100 &&
+        data.date is string && data.date.size() <= 20 &&
+        data.slot is string && data.slot.size() <= 30 &&
+        (!('note' in data.keys()) || (data['note'] is string && data['note'].size() <= 1000)) &&
+        data.source in ['online', 'call'] &&
+        data.status in ['new', 'confirmed', 'done', 'cancelled'] &&
+        data.created is string && data.created.size() <= 50;
+    }
+
+    function isValidPatient(data) {
+      return data.keys().hasAll(['name', 'phone', 'firstVisit', 'visits']) &&
+        data.keys().hasOnly(['name', 'phone', 'firstVisit', 'visits', 'note']) &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+        data.phone is string && data.phone.size() > 0 && data.phone.size() <= 25 &&
+        data.firstVisit is string && data.firstVisit.size() <= 30 &&
+        data.visits is number && data.visits >= 0 &&
+        (!('note' in data.keys()) || (data['note'] is string && data['note'].size() <= 1000));
+    }
+
+    function isValidPost(data) {
+      return data.keys().hasAll(['id', 'title', 'category', 'body', 'created']) &&
+        data.keys().hasOnly(['id', 'title', 'category', 'image', 'body', 'created']) &&
+        data.id is string && data.id.size() > 0 && data.id.size() <= 64 &&
+        data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+        data.category is string && data.category.size() <= 50 &&
+        (!('image' in data.keys()) || (data['image'] is string && data['image'].size() <= 500)) &&
+        data.body is string && data.body.size() <= 10000 &&
+        data.created is string && data.created.size() <= 50;
+    }
+
+    function isValidBanner(data) {
+      return data.keys().hasAll(['id', 'type', 'title', 'sub', 'cta', 'link', 'active', 'created']) &&
+        data.keys().hasOnly(['id', 'type', 'template', 'title', 'sub', 'cta', 'link', 'img', 'active', 'created']) &&
+        data.id is string && data.id.size() > 0 && data.id.size() <= 64 &&
+        data.type in ['template', 'image'] &&
+        (!('template' in data.keys()) || (data['template'] is string && data['template'].size() <= 50)) &&
+        data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
+        data.sub is string && data.sub.size() <= 300 &&
+        data.cta is string && data.cta.size() <= 50 &&
+        data.link is string && data.link.size() <= 300 &&
+        (!('img' in data.keys()) || (data['img'] is string && data['img'].size() <= 500)) &&
+        data.active is bool &&
+        data.created is string && data.created.size() <= 50;
+    }
+
+    function isValidConfig(data) {
+      return data.keys().hasAll(['name', 'phone', 'phoneRaw', 'whatsapp', 'address', 'hours', 'mapQuery']) &&
+        data.keys().hasOnly(['name', 'phone', 'phoneRaw', 'whatsapp', 'address', 'hours', 'mapQuery']) &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+        data.phone is string && data.phone.size() <= 30 &&
+        data.phoneRaw is string && data.phoneRaw.size() <= 25 &&
+        data.whatsapp is string && data.whatsapp.size() <= 25 &&
+        data.address is string && data.address.size() <= 300 &&
+        data.hours is string && data.hours.size() <= 200 &&
+        data.mapQuery is string && data.mapQuery.size() <= 200;
+    }
+
+    function isValidAdmin(data) {
+      return data.keys().hasAll(['email', 'role']) &&
+        data.keys().hasOnly(['email', 'role', 'createdAt']) &&
+        data.email is string && data.email.size() > 0 && data.email.size() <= 120 &&
+        data.role in ['admin', 'staff'] &&
+        (!('createdAt' in data.keys()) || (data['createdAt'] is string && data['createdAt'].size() <= 50));
+    }
+
+    // Admins Collection
+    match /admins/{adminId} {
+      allow get: if isVerifiedAdmin() || (isSignedIn() && request.auth.uid == adminId);
+      allow list: if isVerifiedAdmin();
+      allow create, update: if isVerifiedAdmin() && isValidAdmin(incoming());
+      allow delete: if isVerifiedAdmin();
+    }
+
+    // Appointments Collection
+    match /appointments/{appointmentId} {
+      allow create: if isValidId(appointmentId) && isValidAppointment(incoming()) && incoming().status == 'new';
+      allow get: if isVerifiedAdmin() || (resource != null && resource.data.ref == appointmentId);
+      allow list: if isVerifiedAdmin();
+      allow update: if isVerifiedAdmin() && isValidAppointment(incoming());
+      allow delete: if isVerifiedAdmin();
+    }
+
+    // Patients Ledger (confidential medical notes & contact PII)
+    match /patients/{patientId} {
+      allow read, write: if isVerifiedAdmin();
+    }
+
+    // Blog / Clinic Updates (Public read, admin write)
+    match /posts/{postId} {
+      allow read: if true;
+      allow create, update: if isVerifiedAdmin() && isValidPost(incoming());
+      allow delete: if isVerifiedAdmin();
+    }
+
+    // Promotional & Festival Banners (Public read, admin write)
+    match /banners/{bannerId} {
+      allow read: if true;
+      allow create, update: if isVerifiedAdmin() && isValidBanner(incoming());
+      allow delete: if isVerifiedAdmin();
+    }
+
+    // Clinic Settings & Contact Hours (Public read, admin write)
+    match /settings/{settingId} {
+      allow read: if true;
+      allow create, update: if isVerifiedAdmin() && isValidConfig(incoming());
+      allow delete: if isVerifiedAdmin();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -14,7 +14,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   onExitAdmin,
   children,
 }) => {
-  const { appointments } = useClinicStore();
+  const { appointments, currentUser, isAdmin, loginWithGoogle, logout } = useClinicStore();
   const pendingCount = appointments.filter((a) => a.status === 'new').length;
 
   const navItems = [
@@ -29,12 +29,44 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-[#f4f1ea] flex flex-col font-sans text-[#1c2b26]">
-      {/* Demo Warning Banner */}
-      <div className="bg-[#c79a45] text-[#3a2c07] text-xs font-semibold py-2.5 px-6 flex items-center justify-center gap-2 text-center flex-wrap shadow-xs">
-        <span>🧪 Demo panel — no password, by design.</span>
-        <span className="font-normal opacity-90 hidden sm:inline">
-          This is a demonstration. Everything you see here is stored only in this browser (localStorage).
-        </span>
+      {/* Firebase Cloud Status Bar */}
+      <div className="bg-[#09382e] text-[#bfd6cd] text-xs font-medium py-2 px-6 flex items-center justify-between gap-4 flex-wrap border-b border-emerald-900/50 shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400" />
+          <span className="font-semibold text-white tracking-wide">Firebase Firestore Active</span>
+          <span className="text-emerald-300/70 hidden sm:inline text-[11px]">
+            Region: asia-southeast1 · gen-lang-client-0494679383
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          {currentUser ? (
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-emerald-100 text-xs font-medium truncate max-w-[180px]">
+                {currentUser.email}
+              </span>
+              {isAdmin && (
+                <span className="bg-[#c79a45] text-[#1c2b26] text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">
+                  Admin
+                </span>
+              )}
+              <button
+                onClick={logout}
+                className="text-xs text-amber-200 hover:text-white underline cursor-pointer ml-1"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={loginWithGoogle}
+              className="bg-[#c79a45] hover:bg-[#d6aa57] text-[#1c2b26] font-semibold px-3 py-1 rounded text-xs transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+            >
+              <span>🔑</span>
+              <span>Sign in with Google</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="flex-1 flex flex-col md:flex-row">
@@ -92,7 +124,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               <span>↗</span>
             </button>
             <p className="text-[11px] text-[#7fa295] leading-relaxed px-1">
-              Demo build. No password needed because data does not leave this browser.
+              Cloud sync enabled. Real-time Firebase Firestore database in asia-southeast1.
             </p>
           </div>
         </aside>
