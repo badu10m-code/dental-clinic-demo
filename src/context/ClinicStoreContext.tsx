@@ -19,12 +19,15 @@ import {
   Banner,
   ClinicConfig,
   AppointmentStatus,
+  ArticleItem,
 } from '../types';
+import { ARTICLES_DATA } from '../data/articles';
 
 const STORAGE_KEYS = {
   appt: 'scd2_appointments',
   pat: 'scd2_patients',
   post: 'scd2_posts',
+  art: 'scd2_articles',
   cfg: 'scd2_settings',
   ban: 'scd2_banners',
   ovr: 'scd2_overrides',
@@ -120,79 +123,79 @@ function getInitialSeed(): {
       service: 'Kids Dentistry',
       doctor: 'Dr. Ananya Sharma',
       date: getDateOffset(-1),
-      slot: '12:00 PM',
-      note: 'First visit for daughter, age 6.',
+      slot: '4:00 PM',
+      note: 'First dental checkup for 6-year-old daughter.',
       source: 'online',
       status: 'done',
       created: ct(-1),
     },
     {
-      ref: 'SCD-B7RX4M',
+      ref: 'SCD-K7VX3R',
       name: 'Rohit Verma',
       phone: '+91 98110 20394',
-      service: 'Cleaning & Polishing',
-      doctor: 'Any dentist',
-      date: getDateOffset(-1),
-      slot: '10:00 AM',
-      note: '',
+      service: 'Teeth Whitening',
+      doctor: 'Dr. Rohan Mehta',
+      date: getDateOffset(0),
+      slot: '2:00 PM',
+      note: 'Wedding in family next month.',
       source: 'online',
-      status: 'done',
-      created: ct(-1),
+      status: 'new',
+      created: ct(0),
     },
     {
-      ref: 'SCD-C9LT2H',
+      ref: 'SCD-L9BR1Y',
       name: 'Sneha Kulkarni',
       phone: '+91 99870 55123',
       service: 'Braces / Clear Aligners',
       doctor: 'Dr. Rohan Mehta',
       date: getDateOffset(-2),
-      slot: '2:00 PM',
-      note: 'Wants aligner simulation.',
-      source: 'online',
-      status: 'cancelled',
-      created: ct(-2),
-    },
-    {
-      ref: 'SCD-D3PW8K',
-      name: 'Imran Qureshi',
-      phone: '+91 98209 33012',
-      service: 'Tooth pain / emergency',
-      doctor: 'Dr. Ananya Sharma',
-      date: getDateOffset(-2),
-      slot: '7:30 PM',
-      note: 'Broken molar filling.',
+      slot: '6:00 PM',
+      note: 'Interested in invisible aligner simulation.',
       source: 'call',
       status: 'done',
       created: ct(-2),
     },
     {
-      ref: 'SCD-E6NJ5F',
+      ref: 'SCD-F3MJ8W',
+      name: 'Imran Qureshi',
+      phone: '+91 98209 33012',
+      service: 'Tooth pain / emergency',
+      doctor: 'Dr. Ananya Sharma',
+      date: getDateOffset(-2),
+      slot: '10:00 AM',
+      note: 'Severe throbbing molar pain.',
+      source: 'call',
+      status: 'done',
+      created: ct(-2),
+    },
+    {
+      ref: 'SCD-V6PT4D',
       name: 'Meera Iyer',
       phone: '+91 99670 81245',
-      service: 'Teeth Whitening',
-      doctor: 'Dr. Rohan Mehta',
+      service: 'Cleaning & polishing',
+      doctor: 'Dr. Ananya Sharma',
       date: getDateOffset(-3),
-      slot: '5:30 PM',
-      note: '',
+      slot: '11:30 AM',
+      note: 'Routine 6-month cleaning.',
       source: 'online',
       status: 'done',
       created: ct(-3),
     },
     {
-      ref: 'SCD-F2KT7B',
+      ref: 'SCD-B1NZ8X',
       name: 'Vikas Chauhan',
       phone: '+91 98197 66034',
       service: 'Wisdom Tooth Extraction',
-      doctor: 'Dr. Ananya Sharma',
+      doctor: 'Dr. Rohan Mehta',
       date: getDateOffset(-4),
-      slot: '10:00 AM',
-      note: '',
+      slot: '4:30 PM',
+      note: 'Lower left wisdom tooth impacted.',
       source: 'online',
-      status: 'done',
+      status: 'cancelled',
       created: ct(-4),
     },
     {
-      ref: 'SCD-G8VD3R',
+      ref: 'SCD-C2LK5J',
       name: 'Tanvi Desai',
       phone: '+91 98331 90876',
       service: 'Crowns & Bridges',
@@ -241,6 +244,14 @@ function getInitialSeed(): {
       body: "This Sunday the studio runs a free checkup camp for children under 12, from 10 AM to 1 PM. No appointment needed, walk in with the kids.\n\nEvery child gets a full checkup, a brushing demo, and a fluoride varnish if needed. Bring their old reports if you have them.",
       created: now,
     },
+    {
+      id: 'p-scanner',
+      title: 'New 3D Intraoral Scanner installed',
+      category: 'announcements',
+      image: '/assets/img/clinic-chair.jpg',
+      body: 'We have upgraded our digital dentistry suite with a state-of-the-art 3D intraoral scanner. Say goodbye to uncomfortable putty impressions for crowns, bridges, and aligners.',
+      created: new Date(Date.now() - 86400000 * 3).toISOString(),
+    },
   ];
 
   const seedBanners: Banner[] = [
@@ -248,8 +259,8 @@ function getInitialSeed(): {
       id: 'b1',
       type: 'template',
       template: 'festival',
-      title: 'Dussehra week: 20% off on cleaning & polishing',
-      sub: 'Till 22 October · walk in or WhatsApp to book',
+      title: 'Dussehra & Diwali special: 20% off on scaling & dental checkups',
+      sub: 'Valid till 30 November · Book online or WhatsApp our front desk',
       cta: 'Book now',
       link: '/contact#book',
       active: true,
@@ -259,8 +270,8 @@ function getInitialSeed(): {
       id: 'b2',
       type: 'template',
       template: 'welcome',
-      title: 'Now accepting new patients',
-      sub: 'Same-week appointments with MDS specialists',
+      title: 'Now accepting new patient registrations',
+      sub: 'Same-week appointments with MDS specialists in Andheri West',
       cta: 'Book a visit',
       link: '/contact#book',
       active: true,
@@ -282,6 +293,7 @@ export interface ClinicStoreContextType {
   appointments: Appointment[];
   patients: Patient[];
   posts: Post[];
+  articles: ArticleItem[];
   banners: Banner[];
   config: ClinicConfig;
   overrides: Record<string, { title?: string; cat?: string }>;
@@ -295,11 +307,15 @@ export interface ClinicStoreContextType {
   removePatient: (index: number) => void;
   addPost: (post: Omit<Post, 'id' | 'created'>) => Post;
   deletePost: (id: string) => void;
+  addArticle: (article: ArticleItem) => void;
+  updateArticle: (slug: string, article: Partial<ArticleItem>) => void;
+  deleteArticle: (slug: string) => void;
   addBanner: (banner: Omit<Banner, 'id' | 'created'>) => Banner;
   toggleBanner: (id: string) => void;
   deleteBanner: (id: string) => void;
   updateConfig: (cfg: Partial<ClinicConfig>) => void;
   generateRef: () => string;
+  syncAllToFirebase: () => Promise<void>;
   // Firebase State
   currentUser: User | null;
   isAdmin: boolean;
@@ -322,6 +338,9 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [posts, setPosts] = useState<Post[]>(() =>
     readStorage(STORAGE_KEYS.post, seed.posts)
   );
+  const [articles, setArticles] = useState<ArticleItem[]>(() =>
+    readStorage(STORAGE_KEYS.art, ARTICLES_DATA)
+  );
   const [banners, setBanners] = useState<Banner[]>(() =>
     readStorage(STORAGE_KEYS.ban, seed.banners)
   );
@@ -341,7 +360,7 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     setToast(msg);
     setTimeout(() => {
       setToast(null);
-    }, 2800);
+    }, 3200);
   };
 
   // 1. Firebase Auth Listener
@@ -378,7 +397,7 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return () => unsubscribe();
   }, []);
 
-  // 2. Real-time Firestore Listeners for public content (Posts, Banners, Settings)
+  // 2. Real-time Firestore Listeners for public content (Posts, Articles, Banners, Settings)
   useEffect(() => {
     // Posts listener
     const unsubPosts = onSnapshot(
@@ -393,6 +412,21 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
       },
       (error) => {
         handleFirestoreError(error, OperationType.GET, 'posts');
+      }
+    );
+
+    // Articles listener
+    const unsubArticles = onSnapshot(
+      collection(db, 'articles'),
+      (snapshot) => {
+        if (!snapshot.empty) {
+          const loadedArticles: ArticleItem[] = [];
+          snapshot.forEach((d) => loadedArticles.push(d.data() as ArticleItem));
+          setArticles(loadedArticles);
+        }
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.GET, 'articles');
       }
     );
 
@@ -426,6 +460,7 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     return () => {
       unsubPosts();
+      unsubArticles();
       unsubBanners();
       unsubSettings();
     };
@@ -484,6 +519,10 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [posts]);
 
   useEffect(() => {
+    writeStorage(STORAGE_KEYS.art, articles);
+  }, [articles]);
+
+  useEffect(() => {
     writeStorage(STORAGE_KEYS.ban, banners);
   }, [banners]);
 
@@ -491,7 +530,7 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     writeStorage(STORAGE_KEYS.cfg, config);
   }, [config]);
 
-  // Seed Firestore if initial collections are empty
+  // Seed Firestore if initial collections are empty upon admin login
   useEffect(() => {
     if (!isAdmin) return;
     const seedCloudIfEmpty = async () => {
@@ -500,6 +539,13 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
         if (postsSnap.empty) {
           for (const p of seed.posts) {
             await setDoc(doc(db, 'posts', p.id), p);
+          }
+        }
+
+        const articlesSnap = await getDocs(collection(db, 'articles'));
+        if (articlesSnap.empty) {
+          for (const a of ARTICLES_DATA) {
+            await setDoc(doc(db, 'articles', a.slug), a);
           }
         }
 
@@ -531,7 +577,7 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
           }
         }
       } catch (err) {
-        console.warn('Initial Firestore seed skipped or restricted:', err);
+        console.warn('Initial Firestore seed check:', err);
       }
     };
 
@@ -650,6 +696,35 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     });
   };
 
+  const addArticle = (articleData: ArticleItem) => {
+    setArticles((prev) => [articleData, ...prev.filter((a) => a.slug !== articleData.slug)]);
+    showToast('Article published to Firebase');
+
+    setDoc(doc(db, 'articles', articleData.slug), articleData).catch((err) => {
+      console.warn('Firestore addArticle fallback:', err);
+    });
+  };
+
+  const updateArticle = (slug: string, articleData: Partial<ArticleItem>) => {
+    setArticles((prev) =>
+      prev.map((a) => (a.slug === slug ? { ...a, ...articleData } : a))
+    );
+    showToast('Article updated');
+
+    updateDoc(doc(db, 'articles', slug), articleData).catch((err) => {
+      console.warn('Firestore updateArticle fallback:', err);
+    });
+  };
+
+  const deleteArticle = (slug: string) => {
+    setArticles((prev) => prev.filter((a) => a.slug !== slug));
+    showToast('Article removed');
+
+    deleteDoc(doc(db, 'articles', slug)).catch((err) => {
+      console.warn('Firestore deleteArticle fallback:', err);
+    });
+  };
+
   const addBanner = (bannerData: Omit<Banner, 'id' | 'created'>): Banner => {
     const newBanner: Banner = {
       ...bannerData,
@@ -707,6 +782,47 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
     showToast('Clinic settings saved');
   };
 
+  const syncAllToFirebase = async () => {
+    try {
+      showToast('Syncing all data to Firebase Firestore...');
+
+      // 1. Settings
+      await setDoc(doc(db, 'settings', 'clinic'), config);
+
+      // 2. Banners
+      for (const b of banners) {
+        await setDoc(doc(db, 'banners', b.id), b);
+      }
+
+      // 3. Posts
+      for (const p of posts) {
+        await setDoc(doc(db, 'posts', p.id), p);
+      }
+
+      // 4. Articles
+      for (const a of articles) {
+        await setDoc(doc(db, 'articles', a.slug), a);
+      }
+
+      // 5. Appointments
+      for (const a of appointments) {
+        await setDoc(doc(db, 'appointments', a.ref), a);
+      }
+
+      // 6. Patients
+      for (let i = 0; i < patients.length; i++) {
+        const p = patients[i];
+        const patId = `pat-${i + 1}`;
+        await setDoc(doc(db, 'patients', patId), p);
+      }
+
+      showToast('All data synced to Firebase successfully!');
+    } catch (err: any) {
+      console.error('Firebase sync error:', err);
+      showToast(err?.message || 'Sync failed: ensure admin is signed in');
+    }
+  };
+
   const loginWithGoogle = async () => {
     try {
       await signInWithGoogle();
@@ -733,6 +849,7 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
         appointments,
         patients,
         posts,
+        articles,
         banners,
         config,
         overrides,
@@ -746,11 +863,15 @@ export const ClinicStoreProvider: React.FC<{ children: React.ReactNode }> = ({ c
         removePatient,
         addPost,
         deletePost,
+        addArticle,
+        updateArticle,
+        deleteArticle,
         addBanner,
         toggleBanner,
         deleteBanner,
         updateConfig,
         generateRef,
+        syncAllToFirebase,
         currentUser,
         isAdmin,
         isFirebaseReady,

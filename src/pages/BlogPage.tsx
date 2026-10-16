@@ -7,8 +7,11 @@ interface BlogPageProps {
 }
 
 export const BlogPage: React.FC<BlogPageProps> = ({ onNavigate }) => {
-  const { posts } = useClinicStore();
+  const { posts, articles } = useClinicStore();
   const [activeCategory, setActiveCategory] = useState<string>('all');
+
+  const currentArticles = articles && articles.length > 0 ? articles : ARTICLES_DATA;
+  const featuredArticle = currentArticles[0] || ARTICLES_DATA[0];
 
   const categories = [
     { id: 'all', label: 'All' },
@@ -22,8 +25,8 @@ export const BlogPage: React.FC<BlogPageProps> = ({ onNavigate }) => {
   ];
 
   const filteredArticles = activeCategory === 'all'
-    ? ARTICLES_DATA
-    : ARTICLES_DATA.filter((a) => a.category === activeCategory);
+    ? currentArticles
+    : currentArticles.filter((a) => a.category === activeCategory);
 
   const showUpdates = activeCategory === 'all' || activeCategory === 'updates';
 
@@ -46,33 +49,35 @@ export const BlogPage: React.FC<BlogPageProps> = ({ onNavigate }) => {
       </header>
 
       {/* Featured Big Article */}
-      <section className="max-w-6xl mx-auto px-6 mb-16">
-        <div
-          onClick={() => onNavigate('article', { slug: 'article-root-canal-mumbai' })}
-          className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center bg-[#fffdf9] p-8 sm:p-10 rounded-3xl border border-[#1c2b26]/10 shadow-sm cursor-pointer group hover:shadow-md transition-shadow"
-        >
-          <div className="rounded-2xl overflow-hidden aspect-4/3 shadow-md bg-stone-100">
-            <img
-              src="/assets/img/blog-rct.jpg"
-              alt="Root canal treatment under a dental microscope"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-            />
+      {featuredArticle && (
+        <section className="max-w-6xl mx-auto px-6 mb-16">
+          <div
+            onClick={() => onNavigate('article', { slug: featuredArticle.slug })}
+            className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center bg-[#fffdf9] p-8 sm:p-10 rounded-3xl border border-[#1c2b26]/10 shadow-sm cursor-pointer group hover:shadow-md transition-shadow"
+          >
+            <div className="rounded-2xl overflow-hidden aspect-4/3 shadow-md bg-stone-100">
+              <img
+                src={featuredArticle.cover}
+                alt={featuredArticle.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+            </div>
+            <div>
+              <p className="eyebrow">Featured · {featuredArticle.category}</p>
+              <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-[#1c2b26] mb-3 group-hover:text-[#0e5c4a] transition-colors">
+                {featuredArticle.title}
+              </h2>
+              <p className="text-[#5d6b64] text-sm leading-relaxed mb-4">
+                {featuredArticle.summary}
+              </p>
+              <p className="text-xs text-[#5d6b64] font-medium">
+                By {featuredArticle.author} · {featuredArticle.readTime}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="eyebrow">Featured · Root Canal</p>
-            <h2 className="font-serif text-2xl sm:text-3xl font-semibold text-[#1c2b26] mb-3 group-hover:text-[#0e5c4a] transition-colors">
-              Root canal in Mumbai: cost, pain and what actually happens in that chair
-            </h2>
-            <p className="text-[#5d6b64] text-sm leading-relaxed mb-4">
-              The two-year delay, the ₹500 quick fix, the tooth that finally gave up at 2 am. An endodontist walks through the whole journey, including what it costs here and why prices vary across the city.
-            </p>
-            <p className="text-xs text-[#5d6b64] font-medium">
-              By Dr. Ananya Sharma · 7 min read
-            </p>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Filter Chips */}
       <section className="max-w-6xl mx-auto px-6 mb-10">

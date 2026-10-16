@@ -9,13 +9,14 @@ interface ArticlePageProps {
 }
 
 export const ArticlePage: React.FC<ArticlePageProps> = ({ slug, id, onNavigate }) => {
-  const { posts } = useClinicStore();
+  const { posts, articles } = useClinicStore();
 
   // Try finding dynamic post first if ID provided
   const dynamicPost = id ? posts.find((p) => p.id === id) : null;
 
-  // Otherwise find static article by slug
-  const article = slug ? ARTICLES_DATA.find((a) => a.slug === slug) : ARTICLES_DATA[0];
+  // Otherwise find article by slug from dynamic Firestore articles with fallback
+  const allArticles = articles && articles.length > 0 ? articles : ARTICLES_DATA;
+  const article = slug ? allArticles.find((a) => a.slug === slug) : allArticles[0];
 
   if (dynamicPost) {
     const formattedDate = new Date(dynamicPost.created).toLocaleDateString('en-IN', {

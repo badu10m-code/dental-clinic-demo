@@ -97,7 +97,7 @@
     },
     "Post": {
       "title": "Post",
-      "description": "Clinic announcement, camp notice, or blog update",
+      "description": "Clinic announcement, camp notice, or quick update",
       "type": "object",
       "properties": {
         "id": {
@@ -132,6 +132,54 @@
         }
       },
       "required": ["id", "title", "category", "body", "created"]
+    },
+    "Article": {
+      "title": "Article",
+      "description": "Full dental guide or medical blog post with rich sections",
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "description": "Unique URL-friendly slug",
+          "maxLength": 128
+        },
+        "title": {
+          "type": "string",
+          "description": "Article headline",
+          "maxLength": 250
+        },
+        "category": {
+          "type": "string",
+          "description": "Clinical topic or category",
+          "maxLength": 60
+        },
+        "author": {
+          "type": "string",
+          "description": "Author doctor name",
+          "maxLength": 100
+        },
+        "date": {
+          "type": "string",
+          "description": "Publication date",
+          "maxLength": 50
+        },
+        "readTime": {
+          "type": "string",
+          "description": "Estimated reading duration",
+          "maxLength": 30
+        },
+        "cover": {
+          "type": "string",
+          "description": "Cover image URL or asset path",
+          "maxLength": 500
+        },
+        "summary": {
+          "type": "string",
+          "description": "Short article synopsis",
+          "maxLength": 1000
+        }
+      },
+      "required": ["slug", "title", "category", "author", "date", "cover", "summary"]
     },
     "Banner": {
       "title": "Banner",
@@ -269,6 +317,10 @@
     "/posts/{postId}": {
       "schema": "Post",
       "description": "Clinic news, community camps, and dental health updates"
+    },
+    "/articles/{articleSlug}": {
+      "schema": "Article",
+      "description": "In-depth clinical blog posts and patient guides"
     },
     "/banners/{bannerId}": {
       "schema": "Banner",

@@ -14,7 +14,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   onExitAdmin,
   children,
 }) => {
-  const { appointments, currentUser, isAdmin, loginWithGoogle, logout } = useClinicStore();
+  const { appointments, currentUser, isAdmin, loginWithGoogle, logout, syncAllToFirebase } = useClinicStore();
   const pendingCount = appointments.filter((a) => a.status === 'new').length;
 
   const navItems = [
@@ -39,6 +39,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           </span>
         </div>
         <div className="flex items-center gap-3">
+          {isAdmin && (
+            <button
+              onClick={syncAllToFirebase}
+              title="Push all appointments, banners, guides, and settings to Firestore"
+              className="bg-emerald-700/60 hover:bg-emerald-600 text-white font-medium px-2.5 py-1 rounded text-xs transition-colors cursor-pointer flex items-center gap-1 border border-emerald-500/30"
+            >
+              <span>☁️</span>
+              <span>Sync All Data</span>
+            </button>
+          )}
           {currentUser ? (
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
