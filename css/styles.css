@@ -271,11 +271,11 @@ footer .fine{border-top:1px solid rgba(255,255,255,.14);margin-top:52px;padding-
 
 /* image rotator (CSS-only, no JS needed) */
 .rotator{position:relative;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);background:linear-gradient(135deg,#e8e2d4,#dcd6c6)}
-.rotator img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:rotfade 13.5s infinite}
+.rotator img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:1;animation:rotfade 13.5s infinite}
 .rotator img:nth-child(2){animation-delay:4.5s}
 .rotator img:nth-child(3){animation-delay:9s}
 @keyframes rotfade{0%{opacity:0}5%{opacity:1}30%{opacity:1}36%{opacity:0}100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.rotator img{animation:none;opacity:0}.rotator img:first-child{opacity:1}}
+@media (prefers-reduced-motion:reduce){.rotator img{animation:none}.rotator img:nth-child(n+2){opacity:0}}
 /* stagger: siblings reveal one after another */
 .duo .reveal-img:nth-child(2),.stagger>*:nth-child(2){transition-delay:.12s}
 .duo .reveal-img:nth-child(3),.stagger>*:nth-child(3){transition-delay:.24s}
